@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
     'portfolio.apps.PortfolioConfig',
+    'indices.apps.IndicesConfig',
 ]
 
 MIDDLEWARE = [
