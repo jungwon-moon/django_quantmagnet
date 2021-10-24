@@ -20,5 +20,6 @@ from common import views as common
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('common/', include('common.urls')),
-    path('test/', common.test),
+    path('test/', common.test, name='test'),
+    path('', common.index, name='index'),
 ]
