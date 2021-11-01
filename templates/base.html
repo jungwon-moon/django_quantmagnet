@@ -5,22 +5,23 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
-    <!-- Bootstrap CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/navbar-top-fixed.css' %}">
+    <!-- Bootstrap core CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+
 </head>
 
 <body>
-    {% include "sidebar.html" %}
-    <div class="p-3 " style="display: block; overflow-y: scroll; width: 80vw; white-space:wrap;">
+    {% include 'navbar.html' %}
+    <div class="p-3" style="display: block; overflow-x: hidden; overflow-y: auto;">
         {% block content %}
         {% endblock %}
     </div>
-    <!-- jQuery JS -->
-    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
     <!-- Bootstrap JS -->
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 
 </html>
