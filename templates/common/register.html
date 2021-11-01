@@ -5,11 +5,11 @@
         <div class="col-4">
             <h4>계정생성</h4>
         </div>
-        <div class="col-8 text-right">
-            <span>또는 <a herf="{% url 'common:login' %}">로그인 하세요.</a></span>
+        <div class="col-8 text-end">
+            <span>또는 <a href="{% url 'common:signin' %}">로그인</a> 하세요.</span>
         </div>
     </div>
-    <form method="post" class="post-form" action="{% url 'common:signup' %}">
+    <form method="post" class="post-form" action="{% url 'common:register' %}">
         {% csrf_token %}
         {% include "form_errors.html" %}
         <div class="form-group my-3">

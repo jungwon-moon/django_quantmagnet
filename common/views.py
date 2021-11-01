@@ -15,10 +15,13 @@ def index(request):
     """
     return render(request, 'index.html')
 
-def signup(request):
+def register(request):
     """
     계정생성
     """
+    if request.user.is_authenticated:
+        return redirect('index')
+
     if request.method == "POST":
         form  = UserForm(request.POST)
         if form.is_valid():
@@ -30,4 +33,4 @@ def signup(request):
             return redirect('index')
     else:
         form = UserForm()
-    return render(request, 'common/signup.html', {'form': form})
+    return render(request, 'common/register.html', {'form': form})
