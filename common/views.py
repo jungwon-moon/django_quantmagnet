@@ -1,13 +1,18 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, get_object_or_404, redirect
+
 from common.forms import UserForm
 
+from py import bokeh_practice
 
 def test(request):
     """
     test 페이지
     """
-    return render(request, 'test.html')
+    script1, div1 = bokeh_practice.run_bokeh()
+
+    return render(request, 'test.html', {'s1': script1, 'd1': div1})
+
 
 def index(request):
     """
