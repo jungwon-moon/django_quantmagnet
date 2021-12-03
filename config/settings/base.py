@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
@@ -77,7 +78,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'djongo',
+    #     'NAME': 'quantmagnet_config',
+    # }
 }
 
 # Password validation

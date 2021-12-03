@@ -1,4 +1,24 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h5> main </h5>
+
+<head>
+</head>
+
+<body>
+    <div class="cal-wrap">
+        <div class="cal-area">
+            <input type="date" id="crt" value="1993-11-14">
+        </div>
+    </div>
+    <script type="text/javascript">
+        var date = new Date();
+        date = new Date((date.getTime() - date.getTimezoneOffset() * 60000)).toISOString();
+        // var qdate = date.slice(0, 10).split('-').join('');
+        var qdate = date.slice(0, 10);
+        console.log(qdate)
+        document.getElementById('crt').value = qdate;
+    </script>
+</body>
+
 {% endblock %}

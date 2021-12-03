@@ -1,17 +1,25 @@
+from datetime import datetime
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, get_object_or_404, redirect
 
+
 from common.forms import UserForm
 
-from py import bokeh_practice
+from py import prac_bokeh
+from py.qmscraping import krx, utils
 
 def test(request):
     """
     test 페이지
     """
-    script1, div1 = bokeh_practice.run_bokeh()
+    # now = datetime.today()
+    # now = now.strftime('%Y-%m-%d')
+    # now = utils.check_trading_day(now)
+    # js = krx.fundamental_json(now)
 
-    return render(request, 'test.html', {'s1': script1, 'd1': div1})
+    return render(request, 'test2.html')
+    # return render(request, 'test copy.html', {'js': js, 'now': now})
+    # return render(request, 'test.html', {'s1': script1, 'd1': div1})
 
 
 def index(request):
@@ -38,4 +46,5 @@ def register(request):
             return redirect('index')
     else:
         form = UserForm()
+        
     return render(request, 'common/register.html', {'form': form})
