@@ -19,7 +19,12 @@ from common import views as common
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('common/', include('common.urls')),
-    path('test/', common.test, name='test'),
+    
     path('', common.index, name='index'),
+    
+    path('common/', include('common.urls')),
+    path('calculator/', include('calculator.urls')),
+    
+
+    path('test/', common.test, name='test'),
 ]

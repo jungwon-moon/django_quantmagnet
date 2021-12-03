@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# Create your views here.
+
+def index(request):
+    '''
+    calculator 메인
+    '''
+    return render(request, 'calculator/calculator.html')
+
+def cagr(request):
+    '''
+    CAGR, 복합 연간 성장률
+    '''
+    return render(request, 'calculator/cagr.html')
