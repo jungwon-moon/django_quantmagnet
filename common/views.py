@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from common.forms import UserForm
 
-from py import prac_bokeh
+# from py import prac_bokeh
 # from qmscraping import krx, utils
 
 
