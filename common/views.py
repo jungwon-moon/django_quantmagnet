@@ -2,11 +2,11 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, get_object_or_404, redirect
 
-
 from common.forms import UserForm
 
 from py import prac_bokeh
-from py.qmscraping import krx, utils
+# from qmscraping import krx, utils
+
 
 def test(request):
     """
@@ -48,3 +48,9 @@ def register(request):
         form = UserForm()
         
     return render(request, 'common/register.html', {'form': form})
+
+
+# def krxx(request):
+#     dddd = krx.ipo()
+
+#     return render(request, 'common/krx.html', {'dddd': dddd})

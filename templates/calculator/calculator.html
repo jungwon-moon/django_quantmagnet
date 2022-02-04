@@ -2,8 +2,11 @@
 {% load static %}
 {% block content %}
 <h1>Calculator list</h1>
+<div class="row">
 
-<a href="{% url 'calculator:cagr' %}">CAGR</a>
-
+    <a href="{% url 'calculator:cagr' %}">CAGR</a>
+    <a href="{% url 'calculator:investment_inflation' %}">저축 계산기</a>
+    
+</div>
 
 {% endblock %}

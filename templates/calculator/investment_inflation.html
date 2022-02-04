@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<head>
+    <title>타이틀</title>
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/calculator.js' %}" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+
+<body>
+
+    <h1>저축 계산기</h1>
+
+    <div class="container card">
+
+        <div class="card-header p-2 mt-2">
+            <div class="btn-group" role="group" aria-label="header toggle">
+                <input type="radio" class="btn-check" name="headerradio" id="radiosavingsgoal" autocomplete="off"
+                    onclick="savingsgoalToggle()" checked>
+                <label class="btn btn-outline-dark" for="radiosavingsgoal">목표 저축액</label>
+                <input type="radio" class="btn-check" name="headerradio" id="radiosavingsestimator" autocomplete="off"
+                    onclick="savingsestimatorToggle()">
+                <label class="btn btn-outline-dark" for="radiosavingsestimator">저축액 추정기</label>
+                <input type="radio" class="btn-check" name="headerradio" id="radiotimetoachievegoal" autocomplete="off"
+                    onclick="timetoachievegoalToggle()">
+                <label class="btn btn-outline-dark" for="radiotimetoachievegoal">목표 달성 시간</label>
+            </div>
+        </div>
+
+
+        <div class="card-body row">
+
+            <div id="inputarea" class="col-lg-4">
+                <div id="inputareasavingsgoal" class="row" style="display: flex">
+                    목표 월 투자액
+
+                    <label class="form-label">목표 저축액</label>
+                    <input type="text" class="form-control" id="savingsgoal-goal" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=10,000,000>
+
+                    <label class="form-label">현재 저축액</label>
+                    <input type="text" class="form-control" id="savingsgoal-current" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=1,000,000>
+
+                    <label class="form-label">연이율(%)</label>
+                    <input type="number" class="form-control" id="savingsgoal-annualinterest" minvalue="0.001"
+                        maxvalue="10000" value=3>
+
+                    <label class="form-label">복리 계산</label>
+                    <select type="number" class="form-select" id="savingsgoal-compounding">
+                        <option value="1">월별</option>
+                        <option value="3">분기</option>
+                        <option value="6">반기</option>
+                        <option value="12">연간</option>
+                    </select>
+
+                    <label class="form-label">연수</label>
+                    <input type="number" class="form-control" id="savingsgoal-numberofyear" minvalue="1"
+                        maxvalue="1000000000000" value=5>
+                </div>
+
+                <div id="inputareasavingsestimator" class="row" style="display: none">
+                    저축액 추정기
+
+                    <label class="form-label">현재 저축액</label>
+                    <input type="text" class="form-control" id="savingsestimator-current" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=10,000,000>
+
+                    <label class="form-label">월별 투자액</label>
+                    <input type="text" class="form-control" id="savingsestimator-investment" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=1,000,000>
+
+                    <label class="form-label">연이율(%)</label>
+                    <input type="number" class="form-control" id="savingsestimator-annualinterest" minvalue="0.001"
+                        maxvalue="10000" value=3>
+
+                    <label class="form-label">복리 계산</label>
+                    <select type="number" class="form-select" id="savingsestimator-compounding">
+                        <option value="1">월별</option>
+                        <option value="3">분기</option>
+                        <option value="6">반기</option>
+                        <option value="12">연간</option>
+                    </select>
+
+                    <label class="form-label">연수</label>
+                    <input type="number" class="form-control" id="savingsestimator-numberofyear" minvalue="1"
+                        maxvalue="1000000000000" value=5>
+
+                </div>
+
+                <div id="inputareatimetoachievegoal" class="row" style="display: none">
+                    목표 달성 시간
+
+                    <label class="form-label">현재 저축액</label>
+                    <input type="text" class="form-control" id="timetoachievegoal-current" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=1,000,000>
+
+                    <label class="form-label">목표 투자액</label>
+                    <input type="text" class="form-control" id="timetoachievegoal-goal" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=100,000,000>
+
+                    <label class="form-label">월별 투자액</label>
+                    <input type="text" class="form-control" id="timetoachievegoal-investment" minvalue="1"
+                        onkeyup='inputNumberFormat(this)' maxlength="100" value=1,000,000>
+
+                    <label class="form-label">연이율(%)</label>
+                    <input type="number" class="form-control" id="timetoachievegoal-annualinterest" minvalue="0.001"
+                        maxvalue="10000" value=3>
+
+                    <!-- <label class="form-label">복리 계산</label>
+                    <select type="number" class="form-select" id="timetoachievegoal-compounding">
+                        <option value="1">월별</option>
+                        <option value="3">분기</option>
+                        <option value="6">반기</option>
+                        <option value="12">연간</option>
+                    </select> -->
+
+                </div>
+
+                <div class="text-start pt-3 pb-3">
+                    <button id="calculate" type="button" class="btn btn-dark" onclick="savingsgoal()">계산</button>
+                </div>
+            </div>
+
+            <script>
+
+            </script>
+            <div id="outputarea" class="row col-lg-8 ps-4" style=" display: none;">
+                <div id="outputvaluearea" style="background-color: #212529; color: white; display:inline-block;">
+                    <dl id="savingsgoal-output" class="row pt-2">
+                        <dt class="col-sm-3">월별 투자액</dt>
+                        <dd class="col-sm-9" id="savingsgoal-outputvalue0">12345678</dd>
+                        <div id="savingsgoal-details" style="text-align: right;">
+                            <label onclick="savingsgoalDetails()">자세히</label>
+                        </div>
+                        <div id="savingsgoal-detail-area" style="display: none;">
+                            <dt class="col-sm-3">누적 이자</dt>
+                            <dd class="col-sm-9" id="savingsgoal-outputvalue1">12345678</dd>
+                            <dt class="col-sm-3">누적 투자액</dt>
+                            <dd class="col-sm-9" id="savingsgoal-outputvalue2">12345678</dd>
+                            <div style="text-align: right;">
+                                <label onclick="savingsgoalSimply()">간단히</label>
+                            </div>
+                        </div>
+                    </dl>
+                    <dl id="savingsestimator-output" class="row pt-2">
+                        <dt class="col-sm-3">총 저축액</dt>
+                        <dd class="col-sm-9" id="savingsestimator-outputvalue0">12345678</dd>
+                        <div id="savingsestimator-details" style="text-align: right;">
+                            <label onclick="savingsestimatorDetails()">자세히</label>
+                        </div>
+                        <div id="savingsestimator-detail-area" style="display: none;">
+                            <dt class="col-sm-3">누적 이자</dt>
+                            <dd class="col-sm-9" id="savingsestimator-outputvalue1">12345678</dd>
+                            <dt class="col-sm-3">누적 투자액</dt>
+                            <dd class="col-sm-9" id="savingsestimator-outputvalue2">12345678</dd>
+                            <div style="text-align: right;">
+                                <label onclick="savingsestimatorSimply()">간단히</label>
+                            </div>
+                        </div>
+                    </dl>
+                    <dl id="timetoachievegoal-output" class="row pt-2">
+                        <dt class="col-sm-3">투자 기간</dt>
+                        <dd class="col-sm-9" id="timetoachievegoal-outputvalue0">12345678</dd>
+                        <div id="timetoachievegoal-details" style="text-align: right;">
+                            <label onclick="timetoachievegoalDetails()">자세히</label>
+                        </div>
+                        <div id="timetoachievegoal-detail-area" style="display: none;">
+                            <dt class="col-sm-3">누적 이자</dt>
+                            <dd class="col-sm-9" id="timetoachievegoal-outputvalue1">12345678</dd>
+                            <dt class="col-sm-3">누적 투자액</dt>
+                            <dd class="col-sm-9" id="timetoachievegoal-outputvalue2">12345678</dd>
+                            <div style="text-align: right;">
+                                <label onclick="timetoachievegoalSimply()">간단히</label>
+                            </div>
+                        </div>
+                    </dl>
+                </div>
+
+                <div id="outputviewarea" style="display:inline-block;">
+                    <div id="outputtablearea" class="container table-responsive" style="overflow:scroll; height:400px;">
+                    </div>
+                    <div id="outputchartarea" class="container" style="height: 40vh; display:inline-block;">
+                        <canvas id="outputchart"></canvas>
+                    </div>
+                </div>
+
+                <div id="outputviewtab" class="mt-2" style="display:block;">
+                    <input type="radio" class="btn-check" name="outputtab" id="radiotab1" onclick="chartToggle()"
+                        autocomplete="off" checked>
+                    <label class="btn btn-outline-dark" for="radiotab1">차트</label>
+                    <input type="radio" class="btn-check" name="outputtab" id="radiotab2" onclick="tableToggle()"
+                        autocomplete="off">
+                    <label class="btn btn-outline-dark" for="radiotab2">테이블</label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+</body>
+{% endblock %}
