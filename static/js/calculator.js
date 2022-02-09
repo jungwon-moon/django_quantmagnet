@@ -106,7 +106,8 @@ function savingsgoal() {
     $('#savingsestimator-output').css('display', 'none');
     $('#timetoachievegoal-output').css('display', 'none');
     
-    // 복리 계산
+    // 복리 계산 
+    // 월:1 분기:3 반기:6 연간:12
     const compounding = Number(document.getElementById('savingsgoal-compounding').value);
     // 목표 저축액 
     const goal = Number(uncomma(document.getElementById('savingsgoal-goal').value));
@@ -115,10 +116,12 @@ function savingsgoal() {
     // 연이율
     const annualInterest = Number(document.getElementById('savingsgoal-annualinterest').value) / 1200 * compounding;
     // 연수
-    const numberOfYear = Number(document.getElementById('savingsgoal-numberofyear').value) * 12 / compounding;
+    const numberOfYear = Number(document.getElementById('savingsgoal-numberofyear').value) * 12;
+    // 복리 승수
+    const numberOfMul = Number(document.getElementById('savingsgoal-numberofyear').value) * 12 / compounding;
     
     // 월별 투자액
-    const result1 = Number(Math.round(((goal - current * (1 + annualInterest) ** numberOfYear) / (((1 + annualInterest) ** numberOfYear - 1) / annualInterest)) / compounding))
+    const result1 = Number(Math.round(((goal - current * (1 + annualInterest) ** numberOfMul) / (((1 + annualInterest) ** numberOfMul - 1) / annualInterest)) / compounding))
     // 누적 투자액
     const result2 = Number(Math.round(result1 * numberOfYear + current))
 
@@ -140,23 +143,24 @@ function savingsgoal() {
     const ctx = document.getElementById('outputchart')
     
     const labels = [];
-    for (let i = 1; i <= numberOfYear; i++) {
-        sumInvestment.push(Number(Math.round(sumInvestment.slice(-1)) + result1))
+    for (let month = compounding; month <= numberOfYear; month+=compounding) {
+        sumInvestment.push(Number(Math.round(sumInvestment.slice(-1)) + result1*compounding))
         currentInterest = (Number(sumSavings.slice(-1)) * annualInterest)
         sumInterest.push(Math.round(Number(sumInterest.slice(-1)) + currentInterest))
-        sumSavings.push(Math.round(Number(sumSavings.slice(-1)) + result1 + currentInterest))
-        if (i % 12 == 0) {
-            labels.push(i / 12 + '년')
+        sumSavings.push(Math.round(Number(sumSavings.slice(-1)) + result1*compounding + currentInterest))
+        if (month % 12 == 0) {
+            labels.push(month / 12 + '년')
             chartCurrent.push(current)
             chartInterest.push(sumInterest[sumInterest.length - 1])
             chartSavings.push(sumSavings[sumSavings.length - 1] - sumInterest[sumInterest.length - 1] - current)
         }
     }
     
+    // 테이블
     for (let i = 1; i < sumSavings.length; i++) {
         var row = `
         <tr class="text-center">
-        <td>${i}</td>
+        <td>${i*compounding}</td>
         <td>${comma(sumInvestment[i] + current)}</td>
         <td>${comma(sumInterest[i])}</td>
         <td>${comma(sumSavings[i])}</td>
@@ -165,6 +169,7 @@ function savingsgoal() {
         $('#outputtable > tbody:last').append(row)
     }
     
+    // 차트
     const data = {
         labels: labels,
         datasets: [
@@ -246,18 +251,19 @@ function savingsestimator() {
     $('#savingsestimator-output').css('display', 'block');
     $('#timetoachievegoal-output').css('display', 'none');
     
-    var compounding = Number(document.getElementById('savingsestimator-compounding').value);
-    var current = Number(uncomma(document.getElementById('savingsestimator-current').value));
-    var investment = Number(uncomma(document.getElementById('savingsestimator-investment').value)) * compounding;
-    var annualInterest = Number(document.getElementById('savingsestimator-annualinterest').value) / 1200 * compounding;
-    var numberOfYear = Number(document.getElementById('savingsestimator-numberofyear').value) * 12 / compounding;
+    const compounding = Number(document.getElementById('savingsestimator-compounding').value);
+    const current = Number(uncomma(document.getElementById('savingsestimator-current').value));
+    const investment = Number(uncomma(document.getElementById('savingsestimator-investment').value)) * compounding;
+    const annualInterest = Number(document.getElementById('savingsestimator-annualinterest').value) / 1200 * compounding;
+    const numberOfYear = Number(document.getElementById('savingsestimator-numberofyear').value) * 12;
+    const numberOfMul = Number(document.getElementById('savingsestimator-numberofyear').value) * 12 / compounding;
     
     // 누적 투자액
-    var result1 = current + investment * numberOfYear;
+    const result1 = current + investment * numberOfMul;
     // 현재 저축액 이자
-    var result2 = current * (1 + annualInterest) ** (numberOfYear);
+    const result2 = current * (1 + annualInterest) ** (numberOfMul);
     // 총 저축액
-    var result3 = result2 + investment * ((1 + annualInterest) ** numberOfYear - 1) / annualInterest;
+    const result3 = result2 + investment * ((1 + annualInterest) ** numberOfMul - 1) / annualInterest;
     
     document.getElementById('savingsestimator-outputvalue0').textContent = comma(Math.round(result3));
     document.getElementById('savingsestimator-outputvalue1').textContent = comma(Math.round(result3 - result1));
@@ -274,13 +280,13 @@ function savingsestimator() {
     const ctx = document.getElementById('outputchart');
     
     const labels = [];
-    for (let i = 1; i <= numberOfYear; i++) {
+    for (let month = compounding; month <= numberOfYear; month+=compounding) {
         sumInvestment.push(Number(Math.round(sumInvestment.slice(-1)) + investment))
         currentInterest = (Number(sumSavings.slice(-1)) * annualInterest)
         sumInterest.push(Math.round(Number(sumInterest.slice(-1)) + currentInterest))
         sumSavings.push(Math.round(Number(sumSavings.slice(-1)) + investment + currentInterest))
-        if (i % 12 == 0) {
-            labels.push(i / 12 + '년')
+        if (month % 12 == 0) {
+            labels.push(month / 12 + '년')
             chartCurrent.push(current)
             chartInterest.push(sumInterest[sumInterest.length - 1])
             chartSavings.push(sumSavings[sumSavings.length - 1] - sumInterest[sumInterest.length - 1] - current)
@@ -290,7 +296,7 @@ function savingsestimator() {
     for (let i = 1; i < sumSavings.length; i++) {
         var row = `
         <tr class="text-center">
-        <td>${i}</td>
+        <td>${i * compounding}</td>
         <td>${comma(sumInvestment[i] + current)}</td>
         <td>${comma(sumInterest[i])}</td>
         <td>${comma(sumSavings[i])}</td>
@@ -506,4 +512,3 @@ function tableToggle() {
     $('#outputchartarea').css('display', 'none')
     $('#outputtablearea').css('display', 'inline-block')
 }
-
