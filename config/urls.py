@@ -24,7 +24,4 @@ urlpatterns = [
     
     path('common/', include('common.urls')),
     path('calculator/', include('calculator.urls')),
-    
-    # path('krx/', common.krxx, name='krxx'),
-    path('test/', common.test, name='test'),
 ]
