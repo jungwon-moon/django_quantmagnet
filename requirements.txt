@@ -56,7 +56,7 @@ pyparsing==2.4.7
 python-dateutil==2.8.2
 pytz==2021.3
 PyYAML==6.0
-qm @ git+https://github.com/jungwon-moon/qm@d0369778993e3f0d4681bee15d5655f00360fefa
+qm @ git+https://github.com/jungwon-moon/qm@2ec5c0c457fe8ad14fa239522b4e3bf241ce96ff
 requests==2.26.0
 requests-file==1.5.1
 selenium==4.0.0
