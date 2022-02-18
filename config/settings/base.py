@@ -23,7 +23,10 @@ SECRET_FILE = SECRET_PATH / 'base.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    setattr(sys.modules[__name__], key, value)
+    if key == "host":
+        host = value
+    else:
+        setattr(sys.modules[__name__], key, value)
 # Application definition
 
 INSTALLED_APPS = [
@@ -34,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_crontab',
 
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
@@ -83,8 +87,19 @@ DATABASES = {
         'PASSWORD': 'postgres',
         'HOST': 'db',
         'PORT': 5432,
+    },
+    'cgp': {
+        'ENGINE': 'djongo',
+        'NAME': 'test',
+        'HOST': host,
+        'PORT': 27017,
     }
 }
+
+CRONJOBS =[
+    ### 분 시 일 월 요일
+    ("0 8 * * *", "common.scraping.crontab_daily.non_traiding_days"),
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
