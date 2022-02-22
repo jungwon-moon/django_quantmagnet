@@ -14,6 +14,8 @@ import os
 import sys
 import json
 from pathlib import Path
+from qm.db.db_class import DB
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -23,11 +25,13 @@ SECRET_FILE = SECRET_PATH / 'base.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    if key == "host":
-        host = value
+    if key == "default_db":
+        default_db = DB(value)
+    elif key == "gcp":
+        gcp_db = DB(value)
     else:
         setattr(sys.modules[__name__], key, value)
-# Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -79,20 +84,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
+        'NAME': default_db.dbname,
+        'USER': default_db.user,
+        'PASSWORD': default_db.password,
+        'HOST': default_db.host,
         'PORT': 5432,
     },
-    'cgp': {
-        'ENGINE': 'djongo',
-        'NAME': 'test',
-        'HOST': host,
-        'PORT': 27017,
+    'gcp': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': gcp_db.dbname,
+        'USER': gcp_db.user,
+        'PASSWORD': gcp_db.password,
+        'HOST': gcp_db.host,
+        'PORT': 5432,
     }
 }
 
