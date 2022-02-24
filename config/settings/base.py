@@ -14,7 +14,7 @@ import os
 import sys
 import json
 from pathlib import Path
-from qm.db.db_class import DB
+from qm.db.DB import DBINFO
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,9 +26,9 @@ secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
     if key == "default_db":
-        default_db = DB(value)
+        default_db = DBINFO(value)
     elif key == "gcp":
-        gcp_db = DB(value)
+        gcp_db = DBINFO(value)
     else:
         setattr(sys.modules[__name__], key, value)
 
@@ -103,6 +103,10 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+DATABASE_ROUTER=[
+    'config.router.MultiDBRouter',
+]
 
 CRONJOBS =[
     ### 분 시 일 월 요일
