@@ -36,7 +36,7 @@ def non_traiding_days():
             date = ''.join(row['calnd_dd'].split('-'))
             value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
 
-            db.insertDB('non_trading_days', '', value)
+            db.upsertDB('non_trading_days', value, 'calnd_dd')
 
         txt = f'| non_traiding_days | Run'
         txt = json.dumps({"text": txt})
