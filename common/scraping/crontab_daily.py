@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import json
 import requests
-from qm.db.connect import POSTGRESCRUD
+from qm.db.connect import postgres_connect
 from qm import scraping
 
 
@@ -22,15 +22,12 @@ for key, value in secrets.items():
     if key == 'slack_scraping':
         slack_url = value
 
-
 ### functions
 def non_traiding_days():
-    '''
-    휴장일 갱신을 위해 매일 update 수행
-    '''
+
     try:
         data = scraping.get_non_trading_days(Type='db')
-        db = POSTGRESCRUD(pgdb_properties)
+        db = postgres_connect(pgdb_properties)
 
         for row in data:
             date = ''.join(row['calnd_dd'].split('-'))

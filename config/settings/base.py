@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_crontab',
 
+    'api.apps.ApiConfig',
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
     'portfolio.apps.PortfolioConfig',
@@ -110,7 +111,7 @@ DATABASE_ROUTER=[
 
 CRONJOBS =[
     ### 분 시 일 월 요일
-    ("0 8 * * *", "common.scraping.crontab_daily.non_traiding_days"),
+    ("30 8 * * *", "common.scraping.crontab_daily.non_traiding_days"),
 ]
 
 # Password validation
