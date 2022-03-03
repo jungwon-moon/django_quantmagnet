@@ -152,11 +152,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# manage.py collectstatic 실행시 저장되는 static 경로
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'dev_static',
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
