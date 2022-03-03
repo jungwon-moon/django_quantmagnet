@@ -15,5 +15,6 @@ class NonTradingDays(models.Model):
     holdy_nm = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'non_trading_days'
+        verbose_name_plural = '휴장일'

@@ -18,10 +18,13 @@ from django.urls import path, include
 from common import views as common
 
 urlpatterns = [
+    # admin
     path('admin/', admin.site.urls),
-    
+    # main 화면
     path('', common.index, name='index'),
-    
+    # api
+    path('api/', include('api.urls')),
+    #
     path('common/', include('common.urls')),
     path('calculator/', include('calculator.urls')),
 ]
