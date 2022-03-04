@@ -111,7 +111,7 @@ DATABASE_ROUTER=[
 
 CRONJOBS =[
     ### 분 시 일 월 요일
-    ("30 8 * * *", "common.scraping.crontab_daily.non_traiding_days"),
+    ("30 8 * * *", "common.scraping.crontab_daily.holiday"),
 ]
 
 # Password validation

@@ -1,10 +1,10 @@
 from django.contrib import admin
-from api.models import NonTradingDays
+from api.models import Holiday
 # Register your models here.
 
 
 class ModelAdmin(admin.ModelAdmin):
-    using='gcp'
+    using = 'gcp'
     search_fields = ['calnd_dd']
     list_display = ['calnd_dd', 'kr_dy_tp', 'holdy_nm']
 
@@ -24,4 +24,4 @@ class ModelAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
 
-admin.site.register(NonTradingDays, ModelAdmin)
+admin.site.register(Holiday, ModelAdmin)

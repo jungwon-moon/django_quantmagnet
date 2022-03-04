@@ -11,6 +11,7 @@ headers = {
     "Content-type": "application/json"
 }
 
+
 ### postgresql connect
 SECRET_PATH = Path(__file__).resolve().parent.parent.parent
 SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
@@ -22,9 +23,9 @@ for key, value in secrets.items():
     if key == 'slack_scraping':
         slack_url = value
 
-### functions
-def non_traiding_days():
 
+### functions
+def holiday():
     try:
         data = scraping.get_non_trading_days(Type='db')
         db = postgres_connect(pgdb_properties)
@@ -33,14 +34,14 @@ def non_traiding_days():
             date = ''.join(row['calnd_dd'].split('-'))
             value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
 
-            db.upsertDB('non_trading_days', value, 'calnd_dd')
+            db.upsertDB('holiday', value, 'calnd_dd')
 
-        txt = f'| non_traiding_days | Run'
+        txt = f'| holiday | Run'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'| non_traiding_days | * Error * : {e}'
+        txt = f'| holiday | * Error * : {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 

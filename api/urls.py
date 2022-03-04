@@ -1,7 +1,11 @@
-from django.urls import path, include
-from api.views import HolidayAPI
+from django.urls import path
+from api.views import *
+
 
 urlpatterns = [
-    path("holiday/", HolidayAPI),
+    ### 한국 주식 ###
+    path("kr/holiday/", HolidayAPI),
+    path("kr/holiday/<year>/", HolidayDetailAPI)
+    ###  ###
     
 ]

@@ -8,13 +8,13 @@
 from django.db import models
 
 
-class NonTradingDays(models.Model):
+class Holiday(models.Model):
     calnd_dd = models.CharField(primary_key=True, max_length=8)
     dy_tp_cd = models.CharField(max_length=3, blank=True, null=True)
     kr_dy_tp = models.CharField(max_length=3, blank=True, null=True)
     holdy_nm = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = True
-        db_table = 'non_trading_days'
-        verbose_name_plural = '휴장일'
+        managed = False
+        db_table = 'holiday'
+        verbose_name_plural = "휴장일"
