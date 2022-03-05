@@ -1,9 +1,9 @@
 from django.contrib import admin
-from api.models import Holiday
+from api.models import *
 # Register your models here.
 
 
-class ModelAdmin(admin.ModelAdmin):
+class HolydayAdmin(admin.ModelAdmin):
     using = 'gcp'
     search_fields = ['calnd_dd']
     list_display = ['calnd_dd', 'kr_dy_tp', 'holdy_nm']
@@ -24,4 +24,4 @@ class ModelAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
 
-admin.site.register(Holiday, ModelAdmin)
+admin.site.register(Holiday, HolydayAdmin)
