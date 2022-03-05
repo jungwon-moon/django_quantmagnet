@@ -65,7 +65,7 @@ PySocks==1.7.1
 python-dateutil==2.8.2
 pytz==2021.3
 PyYAML==6.0
-qm @ git+https://github.com/jungwon-moon/qm@5780c6e06b8c04822e62f0b12820cc037d391903
+qm @ git+https://github.com/jungwon-moon/qm@9799942d451e2de5002c8f74ee837c77c6826a87
 requests==2.27.1
 requests-file==1.5.1
 selenium==4.1.2
