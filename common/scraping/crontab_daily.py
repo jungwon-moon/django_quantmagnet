@@ -84,7 +84,7 @@ def stock_price():
             data = scraping.get_all_stock_price()
             db = postgres_connect(pgdb_properties)
 
-            for stock in data[:2]:
+            for stock in data:
                 value = date, stock['ISU_SRT_CD'],\
                     stock['MKT_NM'], stock['FLUC_RT'],\
                     stock['TDD_OPNPRC'], stock['TDD_HGPRC'],\
