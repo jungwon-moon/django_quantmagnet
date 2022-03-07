@@ -1,10 +1,9 @@
-from datetime import datetime
-from pathlib import Path
 import json
 import requests
+from pathlib import Path
+from datetime import datetime
 from qm.db.connect import postgres_connect
-from qm import scraping
-from qm import utils
+from qm import scraping, utils
 
 
 ### slack webhook connect
@@ -53,18 +52,18 @@ def holiday():
 
 def fundamental_v1():
     # 실행일과 거래일이 일치하는지 확인
-    if utils.check_trading_day(date) == date:
-
+    adj_date = utils.check_trading_day(date)
+    if adj_date == date:
         try:
             data = scraping.get_fundamentalv1()
             db = postgres_connect(pgdb_properties)
-
+            values = []
             for stock in data:
-                value = date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],\
+                value = (date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],\
                     stock['EPS'], stock['PER'], stock['BPS'],\
-                    stock['PBR'], stock['DPS'], stock['DVD_YLD']
-
-                db.insertDB('fundamental_v1', value)
+                    stock['PBR'], stock['DPS'], stock['DVD_YLD'])
+                values.append(value)
+            db.multiInsertDB('fundamental_v1', values)
 
             txt = f'| fundamental_v1 | Run'
             txt = json.dumps({"text": txt})
@@ -78,21 +77,23 @@ def fundamental_v1():
 
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
-    if utils.check_trading_day(date) == date:
-
+    adj_date = utils.check_trading_day(date)
+    if adj_date == date:
         try:
             data = scraping.get_all_stock_price()
             db = postgres_connect(pgdb_properties)
 
+            values = []
             for stock in data:
-                value = date, stock['ISU_SRT_CD'],\
-                    stock['MKT_NM'], stock['FLUC_RT'],\
-                    stock['TDD_OPNPRC'], stock['TDD_HGPRC'],\
-                    stock['TDD_LWPRC'], stock['TDD_CLSPRC'],\
-                    stock['ACC_TRDVOL'], stock['ACC_TRDVAL'],\
-                    stock['MKTCAP']
-
-                db.insertDB('stock_price', value)
+                if stock['MKT_NM'] != 'KONEX':
+                    value = (adj_date, stock['ISU_SRT_CD'],\
+                        stock['MKT_NM'], stock['FLUC_RT'],\
+                        stock['TDD_OPNPRC'], stock['TDD_HGPRC'],\
+                        stock['TDD_LWPRC'], stock['TDD_CLSPRC'],\
+                        stock['ACC_TRDVOL'], stock['ACC_TRDVAL'],\
+                        stock['MKTCAP'])
+                    values.append(value)
+            db.multiInsertDB('stock_price', values)
 
             txt = f'| stock_price | Run'
             txt = json.dumps({"text": txt})
