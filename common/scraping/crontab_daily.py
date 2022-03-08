@@ -27,16 +27,18 @@ date = utils.dt2str(datetime.today())
 
 ### functions
 def holiday():
+
     # 실행일과 거래일이 일치하는지 확인
-    if utils.check_trading_day(date) == date:
-        
+    global date
+    adj_date = utils.check_trading_day(date)
+    if  adj_date == date:
         try:
             data = scraping.get_holiday()
             db = postgres_connect(pgdb_properties)
 
             for row in data:
-                date = ''.join(row['calnd_dd'].split('-'))
-                value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
+                adj_date = ''.join(row['calnd_dd'].split('-'))
+                value = adj_date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
 
                 db.upsertDB('holiday', value, 'calnd_dd')
 
@@ -52,6 +54,7 @@ def holiday():
 
 def fundamental_v1():
     # 실행일과 거래일이 일치하는지 확인
+    global date
     adj_date = utils.check_trading_day(date)
     if adj_date == date:
         try:
@@ -59,7 +62,7 @@ def fundamental_v1():
             db = postgres_connect(pgdb_properties)
             values = []
             for stock in data:
-                value = (date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],\
+                value = (adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],\
                     stock['EPS'], stock['PER'], stock['BPS'],\
                     stock['PBR'], stock['DPS'], stock['DVD_YLD'])
                 values.append(value)
@@ -77,6 +80,7 @@ def fundamental_v1():
 
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
+    global date
     adj_date = utils.check_trading_day(date)
     if adj_date == date:
         try:
