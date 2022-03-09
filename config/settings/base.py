@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
-    'portfolio.apps.PortfolioConfig',
+    'strategy.apps.StrategyConfig',
     'indices.apps.IndicesConfig',
 ]
 
