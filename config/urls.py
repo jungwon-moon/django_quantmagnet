@@ -21,9 +21,11 @@ urlpatterns = [
     # admin
     path('admin/', admin.site.urls),
     # main 화면
-    path('', common.index, name='index'),
+    path('', common.main, name='main'),
     # api
     path('api/', include('api.urls')),
+    # 
+    path('strategy/', include('strategy.urls')),
     #
     path('common/', include('common.urls')),
     path('calculator/', include('calculator.urls')),
