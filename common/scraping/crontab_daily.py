@@ -22,24 +22,23 @@ for key, value in secrets.items():
     if key == 'slack_scraping':
         slack_url = value
 
-date = utils.dt2str(datetime.today())
+today = utils.dt2str(datetime.today())
 
 
 ### functions
 def holiday():
 
     # 실행일과 거래일이 일치하는지 확인
-    global date
-    adj_date = utils.check_trading_day(date)
-    if  adj_date == date:
+    global today
+    adj_date = utils.check_trading_day(today)
+    if adj_date == today:
         try:
             data = scraping.get_holiday()
             db = postgres_connect(pgdb_properties)
 
             for row in data:
-                adj_date = ''.join(row['calnd_dd'].split('-'))
-                value = adj_date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
-
+                date = ''.join(row['calnd_dd'].split('-'))
+                value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
                 db.upsertDB('holiday', value, 'calnd_dd')
 
             txt = f'| holiday | Run'
@@ -54,9 +53,9 @@ def holiday():
 
 def fundamental_v1():
     # 실행일과 거래일이 일치하는지 확인
-    global date
-    adj_date = utils.check_trading_day(date)
-    if adj_date == date:
+    global today
+    adj_date = utils.check_trading_day(today)
+    if adj_date == today:
         try:
             data = scraping.get_fundamentalv1()
             db = postgres_connect(pgdb_properties)
@@ -80,9 +79,9 @@ def fundamental_v1():
 
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
-    global date
-    adj_date = utils.check_trading_day(date)
-    if adj_date == date:
+    global today
+    adj_date = utils.check_trading_day(today)
+    if adj_date == today:
         try:
             data = scraping.get_all_stock_price()
             db = postgres_connect(pgdb_properties)

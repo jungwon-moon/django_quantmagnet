@@ -9,9 +9,10 @@ from django.db import models
 
 
 class FundamentalV1(models.Model):
-    date = models.CharField(primary_key=True, max_length=8)
+    date = models.OneToOneField(
+        'StockPrice', models.DO_NOTHING, db_column='date', primary_key=True)
     stcd = models.CharField(max_length=6)
-    stnm = models.TextField()
+    stnm = models.TextField(blank=True, null=True)
     eps = models.TextField(blank=True, null=True)
     per = models.TextField(blank=True, null=True)
     bps = models.TextField(blank=True, null=True)
@@ -38,7 +39,7 @@ class Holiday(models.Model):
 
 
 class StockPrice(models.Model):
-    date = models.CharField(primary_key=True, max_length=8)
+    date = models.TextField(primary_key=True)
     stcd = models.CharField(max_length=6)
     market = models.TextField(blank=True, null=True)
     rate = models.TextField(blank=True, null=True)

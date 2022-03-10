@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 
-def index(request):
+def calculator(request):
     '''
     calculator 메인
     '''
