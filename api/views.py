@@ -1,34 +1,34 @@
 from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework import generics, filters
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from api.models import *
 from api.serializers import *
 
 
 # Create your views here.
-@api_view(['GET'])
-def HolidayAPI(request):
+class HolidayList(generics.ListAPIView):
     using = 'gcp'
-    query = Holiday.objects.using(using).all()
-    serializer = HolidaySerializer(query, many=True)
-    return Response(serializer.data)
+    queryset = Holiday.objects.using(using).all()
+    serializer_class = HolidaySerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^calnd_dd']
 
 
-@api_view(['GET'])
-def HolidayDetailAPI(request, year):
+class FundamentalFilter(django_filters.FilterSet):
+    class Meta:
+        model = FundamentalV1
+        fields = {
+            'date': ['contains'],
+            'per': ['gte', 'lte']
+        }
+        
+
+class FundamentalList(generics.ListAPIView):
     using = 'gcp'
-    query = Holiday.objects.using(using).all().filter(calnd_dd__contains=year)
-    serializer = HolidaySerializer(query, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def StockPriceAPI(request, day):
-    using = 'gcp'
-    query = StockPrice.objects.using(
-        using).all().filter(date__contains=day)[:5]
-    serializer = StockPriceSerializer(query, many=True)
-    return Response(serializer.data)
-
+    queryset = FundamentalV1.objects.using(using).all()
+    serializer_class = FundamentalSerializer
+    filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['date', 'stcd', ]
+    filter_class = FundamentalFilter
 
