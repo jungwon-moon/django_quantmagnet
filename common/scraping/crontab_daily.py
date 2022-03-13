@@ -25,6 +25,13 @@ for key, value in secrets.items():
 today = utils.dt2str(datetime.today())
 
 
+def rep_0(text):
+    text = text.replace(',', '')
+    if text == '-':
+        return None
+    return text
+
+
 ### functions
 def holiday():
 
@@ -61,12 +68,12 @@ def fundamental_v1():
             db = postgres_connect(pgdb_properties)
             values = []
             for stock in data:
-                value = (adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],\
-                    stock['EPS'], stock['PER'], stock['BPS'],\
-                    stock['PBR'], stock['DPS'], stock['DVD_YLD'])
+                value = (adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
+                    rep_0(stock['EPS']), rep_0(stock['PER']),
+                    rep_0(stock['BPS']), rep_0(stock['PBR']),
+                    rep_0(stock['DPS']), rep_0(stock['DVD_YLD']))
                 values.append(value)
             db.multiInsertDB('fundamental_v1', values)
-
             txt = f'| fundamental_v1 | Run'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
@@ -89,12 +96,11 @@ def stock_price():
             values = []
             for stock in data:
                 if stock['MKT_NM'] != 'KONEX':
-                    value = (adj_date, stock['ISU_SRT_CD'],\
-                        stock['MKT_NM'], stock['FLUC_RT'],\
-                        stock['TDD_OPNPRC'], stock['TDD_HGPRC'],\
-                        stock['TDD_LWPRC'], stock['TDD_CLSPRC'],\
-                        stock['ACC_TRDVOL'], stock['ACC_TRDVAL'],\
-                        stock['MKTCAP'])
+                    value = (adj_date, stock['ISU_SRT_CD'], stock['MKT_NM'],
+                        rep_0(stock['FLUC_RT']), rep_0(stock['TDD_OPNPRC']),
+                        rep_0(stock['TDD_HGPRC']), rep_0(stock['TDD_LWPRC']),
+                        rep_0(stock['TDD_CLSPRC']), rep_0(stock['ACC_TRDVOL']),
+                        rep_0(stock['ACC_TRDVAL']), rep_0(stock['MKTCAP']))
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
