@@ -10,9 +10,10 @@ def strategy(request):
 
 
 def screener(request):
-    using = 'gcp'
-    query = FundamentalV1.objects.using(
-        using).all()[:5]
-    serializer = FundamentalSerializer(query, many=True)
-    data = serializer.data
-    return render(request, 'strategy/screener.html', {'data': data})
+    # using = 'gcp'
+    # query = FundamentalV1.objects.using(
+    #     using).all()[:5]
+    # serializer = FundamentalSerializer(query, many=True)
+    # data = serializer.data
+    # return render(request, 'strategy/screener.html', {'data': data})
+    return render(request, 'strategy/screener.html')

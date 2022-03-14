@@ -18,15 +18,17 @@ from django.urls import path, include
 from common import views as common
 
 urlpatterns = [
-    # admin
-    path('admin/', admin.site.urls),
     # main 화면
     path('', common.main, name='main'),
-    # api
-    path('api/', include('api.urls')),
-    # 
-    path('strategy/', include('strategy.urls')),
-    #
+    # admin
+    path('admin/', admin.site.urls),
+
+    # 로그인/회원가입
     path('common/', include('common.urls')),
+    # API
+    path('api/', include('api.urls')),
+    # 투자 계산기
     path('calculator/', include('calculator.urls')),
+    # 투자 전략
+    path('strategy/', include('strategy.urls')),
 ]

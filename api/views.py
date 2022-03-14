@@ -20,7 +20,8 @@ class FundamentalFilter(django_filters.FilterSet):
         model = FundamentalV1
         fields = {
             'date': ['contains'],
-            'per': ['gte', 'lte']
+            'eps': ['gte', 'lte'],
+            'per': ['gte', 'lte'],
         }
         
 
@@ -29,6 +30,5 @@ class FundamentalList(generics.ListAPIView):
     queryset = FundamentalV1.objects.using(using).all()
     serializer_class = FundamentalSerializer
     filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['date', 'stcd', ]
     filter_class = FundamentalFilter
 

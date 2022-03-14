@@ -1,18 +1,7 @@
-import json
-from qm import scraping
-from bokeh.plotting import figure
-from bokeh.embed import components
-from datetime import datetime
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, get_object_or_404, redirect
-
 from common.forms import UserForm
 
-# from py import prac_bokeh
-# from qmscraping import krx, utils
-
-from math import pi
-import pandas as pd 
 
 def main(request):
     """
