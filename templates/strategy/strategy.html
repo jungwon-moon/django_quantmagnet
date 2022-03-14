@@ -3,16 +3,16 @@
 {% block content %}
 
 <head>
-    <title>금융 계산기</title>
+    <title>투자전략</title>
     <script src="{% static 'js/jquery-3.6.0.min.js' %}" type="text/javascript"></script>
 </head>
 
 <body>
-    <h1>금융 계산기</h1>
+
+    <h1>투자전략</h1>
     <div class="row">
 
-        <a href="{% url 'calculator:cagr' %}">CAGR</a>
-        <a href="{% url 'calculator:investment_inflation' %}">저축 계산기</a>
+        <a href="{% url 'strategy:screener' %}">종목 스크리너</a>
 
     </div>
 </body>
