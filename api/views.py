@@ -22,6 +22,10 @@ class FundamentalFilter(django_filters.FilterSet):
             'date': ['contains'],
             'eps': ['gte', 'lte'],
             'per': ['gte', 'lte'],
+            'bps': ['gte', 'lte'],
+            'pbr': ['gte', 'lte'],
+            'dps': ['gte', 'lte'],
+            'dvd_yld': ['gte', 'lte'],
         }
         
 
