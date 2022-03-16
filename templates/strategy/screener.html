@@ -15,27 +15,33 @@
 
     var today = new Date(Date.now() + 3240 * 10000).toISOString().split("T")[0];
 
-    const filtersList = ["eps",];
+    const filtersList = ["eps", "per", "bps", "pbr", "dvd_yld"];
 
     function loadData() {
 
         var Dd = document.getElementById('Dd').value.replaceAll("-", "")
-        for (const i in filtersList) {
-            var filterName = filtersList[i]
-            var filters = $(`[data-id^=${filterName}]`)
+        for (const filterName of filtersList) {
             // global 변수 생성
-            window[`${filterName}` + 'Min'] = filters[2].value
-            window[`${filterName}` + 'Max'] = filters[3].value
+            window[`${filterName}` + 'Min'] = $(`[data-id^=${filterName}]`)[3].value
+            window[`${filterName}` + 'Max'] = $(`[data-id^=${filterName}]`)[4].value
         }
-
+        
         $.ajax({
             type: "get",
             url: "{% url 'api:fundamental' %}",
             data: "date__contains=" + Dd
                 + "&eps__gte=" + epsMin
                 + "&eps__lte=" + epsMax
-                + "&per__gte=" + ''
-                + "&per__lte=" + ''
+                + "&per__gte=" + perMin
+                + "&per__lte=" + perMax
+                + "&bps__gte=" + bpsMin
+                + "&bps__lte=" + bpsMax
+                + "&pbr__gte=" + pbrMin
+                + "&pbr__lte=" + pbrMax
+                + "&dps__gte=" + ''
+                + "&dps__lte=" + ''
+                + "&dvd_yld__gte=" + dvd_yldMin
+                + "&dvd_yld__lte=" + dvd_yldMax
                 + "",
             success: function (result) {
                 setTable(result)
@@ -49,26 +55,27 @@
     <div class="container">
         <div class="row">
             <div class="filters-section col-4">
-                <div class="p-2">
+                
+                <div class="p-2 col">
                     기준일
-                    <input id="Dd" type="date" onchange="loadData()">
+                    <input id="Dd" class="col" type="date" onchange="loadData()">
                 </div>
-                <div class="filters_header p-2">
-                    <span>필터 목록</span>
-                </div>
-                <div class="filter" data-id="eps">
-                    <div class="filter-name p-2 row">
-                        <span class="col-10">주당순이익(EPS)</span>
-                        <div class="filter_dropdown col-2">▼</div>
+                <div class="update">(18:00 업데이트)</div>
+                    <div class="filters_header p-2">
+                        <span>필터 목록</span>
                     </div>
-                    <div class="filter-main" data-id="eps">
 
+                <div class="filter" data-id="eps">
+                    <div class="filter-name p-2 row" data-id="eps">
+                        <div class="col-10">주당순이익(EPS)</div>
+                        <div class="filter-info col-2" title="">ⓘ</div>
+                    </div>
+                    <div class="filter-main" data-id="eps" style="display:none">
                         <div class="slider">
-                            <input type="range" class="left" id="input-left" data-id="eps" onchange="loadData()" min="0"
+                            <input type="range" class="left" data-id="eps" onchange="loadData()" min="0"
                                 max="100" step="0.1" value="0">
-                            <input type="range" class="right" id="input-right" data-id="eps" onchange="loadData()"
+                            <input type="range" class="right" data-id="eps" onchange="loadData()"
                                 min="0" max="100" step="0.1" value="100">
-
                             <div class="track">
                                 <div class="range" data-id="eps"></div>
                                 <div class="thumb left" data-id="eps"></div>
@@ -76,14 +83,119 @@
                             </div>
                         </div>
                         <div class="text-box">
-                            <input type="text" class="form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                            <input type="text" class="text left form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
                                 data-id="eps" value="0">
-                            <input type="text" class="form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                            <input type="text" class="text right form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
                                 data-id="eps" value="100">
                         </div>
-
                     </div>
                 </div>
+
+                <div class="filter" data-id="per">
+                    <div class="filter-name p-2 row" data-id="per">
+                        <div class="col-10">주가수익률(PER)</div>
+                        <div class="filter-info col-2" title="">ⓘ</div>
+                    </div>
+                    <div class="filter-main" data-id="per" style="display:none">
+                        <div class="slider">
+                            <input type="range" class="left" data-id="per" onchange="loadData()" min="0"
+                                max="500" step="0.1" value="0">
+                            <input type="range" class="right" data-id="per" onchange="loadData()"
+                                min="0" max="500" step="0.1" value="500">
+                            <div class="track">
+                                <div class="range" data-id="per"></div>
+                                <div class="thumb left" data-id="per"></div>
+                                <div class="thumb right" data-id="per"></div>
+                            </div>
+                        </div>
+                        <div class="text-box">
+                            <input type="text" class="text left form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="per" value="0">
+                            <input type="text" class="text right form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="per" value="500">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter" data-id="bps">
+                    <div class="filter-name p-2 row" data-id="bps">
+                        <div class="col-10">주당순자산가치(bps)</div>
+                        <div class="filter-info col-2" title="">ⓘ</div>
+                    </div>
+                    <div class="filter-main" data-id="bps" style="display:none">
+                        <div class="slider">
+                            <input type="range" class="left" data-id="bps" onchange="loadData()" min="500"
+                                max="200000" step="100" value="500">
+                            <input type="range" class="right" data-id="bps" onchange="loadData()"
+                                min="500" max="200000" step="100" value="200000">
+                            <div class="track">
+                                <div class="range" data-id="bps"></div>
+                                <div class="thumb left" data-id="bps"></div>
+                                <div class="thumb right" data-id="bps"></div>
+                            </div>
+                        </div>
+                        <div class="text-box">
+                            <input type="text" class="text left form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="bps" value="500">
+                            <input type="text" class="text right form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="bps" value="200,000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter" data-id="pbr">
+                    <div class="filter-name p-2 row" data-id="pbr">
+                        <div class="col-10">주가순자산비율(pbr)</div>
+                        <div class="filter-info col-2" title="">ⓘ</div>
+                    </div>
+                    <div class="filter-main" data-id="pbr" style="display:none">
+                        <div class="slider">
+                            <input type="range" class="left" data-id="pbr" onchange="loadData()" min="0"
+                                max="50" step="0.05" value="0">
+                            <input type="range" class="right" data-id="pbr" onchange="loadData()"
+                                min="0" max="50" step="0.05" value="50">
+                            <div class="track">
+                                <div class="range" data-id="pbr"></div>
+                                <div class="thumb left" data-id="pbr"></div>
+                                <div class="thumb right" data-id="pbr"></div>
+                            </div>
+                        </div>
+                        <div class="text-box">
+                            <input type="text" class="text left form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="pbr" value="0">
+                            <input type="text" class="text right form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="pbr" value="50">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter" data-id="dvd_yld">
+                    <div class="filter-name p-2 row" data-id="dvd_yld">
+                        <div class="col-10">배당수익률(dvd_yld)</div>
+                        <div class="filter-info col-2" title="">ⓘ</div>
+                    </div>
+                    <div class="filter-main" data-id="dvd_yld" style="display:none">
+                        <div class="slider">
+                            <input type="range" class="left" data-id="dvd_yld" onchange="loadData()" min="0"
+                                max="20" step="0.01" value="0">
+                            <input type="range" class="right" data-id="dvd_yld" onchange="loadData()"
+                                min="0" max="20" step="0.01" value="20">
+                            <div class="track">
+                                <div class="range" data-id="dvd_yld"></div>
+                                <div class="thumb left" data-id="dvd_yld"></div>
+                                <div class="thumb right" data-id="dvd_yld"></div>
+                            </div>
+                        </div>
+                        <div class="text-box">
+                            <input type="text" class="text left form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="dvd_yld" value="0">
+                            <input type="text" class="text right form-control m-3 mt-0 col" onkeyup="inputNumberFormat(this)"
+                                data-id="dvd_yld" value="20">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filters-footer"></div>
             </div>
 
             <div class="col-8 resultTable">
@@ -108,7 +220,6 @@
             </div>
         </div>
     </div>
-
 </body>
 <script src="{% static 'js/screener.js' %}" type="text/javascript"></script>
 {% endblock %}
