@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, filters
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from api.models import *
 from api.serializers import *
 
@@ -27,12 +28,24 @@ class FundamentalFilter(django_filters.FilterSet):
             'dps': ['gte', 'lte'],
             'dvd_yld': ['gte', 'lte'],
         }
-        
+
+
+
+class FundamentalPagination(LimitOffsetPagination):
+    default_limit = 3000
+    max_limit = 3000
 
 class FundamentalList(generics.ListAPIView):
     using = 'gcp'
+
     queryset = FundamentalV1.objects.using(using).all()
     serializer_class = FundamentalSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
     filter_class = FundamentalFilter
+    pagination_class= FundamentalPagination
 
+    ordering_fields = ['stcd']
+    ordering = ['stcd']

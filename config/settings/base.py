@@ -19,6 +19,7 @@ from qm.db.DB import DBINFO
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+PARENT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 SECRET_PATH = BASE_DIR / 'config/.config_secret'
 SECRET_FILE = SECRET_PATH / 'base.json'
 
@@ -66,9 +67,12 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-        ]
+    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
+    'DEFAULT_PAGINATION_CLASS': [
+        'rest_framework.pagination.LimitOffsetPagination',
+        'rest_framework.pagination.PageNumberPagination',
+    ],
+    'PAGE_SIZE': 1000
 }
 
 ROOT_URLCONF = 'config.urls'
@@ -179,8 +183,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # manage.py collectstatic 실행시 저장되는 static 경로
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = PARENT_DIR / "react_quantmagnet/public/static"
 
+# manage.py collectstatic 실행시 해당 경로 파일도 복사?
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
