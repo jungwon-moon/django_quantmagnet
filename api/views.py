@@ -8,11 +8,16 @@ from api.serializers import *
 
 
 # Create your views here.
+class HolidayPagination(LimitOffsetPagination):
+    default_limit = 100
+    max_limit = 100
+
 class HolidayList(generics.ListAPIView):
     using = 'gcp'
     queryset = Holiday.objects.using(using).all()
     serializer_class = HolidaySerializer
     filter_backends = [filters.SearchFilter]
+    pagination_class = HolidayPagination
     search_fields = ['^calnd_dd']
 
 
@@ -28,8 +33,6 @@ class FundamentalFilter(django_filters.FilterSet):
             'dps': ['gte', 'lte'],
             'dvd_yld': ['gte', 'lte'],
         }
-
-
 
 class FundamentalPagination(LimitOffsetPagination):
     default_limit = 3000
