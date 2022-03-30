@@ -68,10 +68,13 @@ def fundamental_v1():
             db = postgres_connect(pgdb_properties)
             values = []
             for stock in data:
-                value = (adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
+                value = (
+                    adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
                     rep_0(stock['EPS']), rep_0(stock['PER']),
                     rep_0(stock['BPS']), rep_0(stock['PBR']),
-                    rep_0(stock['DPS']), rep_0(stock['DVD_YLD']))
+                    rep_0(stock['DPS']), rep_0(stock['DVD_YLD']),
+                    rep_0(round((stock['EPS']/stock['BPS'])*100))   # ROE 계산
+                    )
                 values.append(value)
             db.multiInsertDB('fundamental_v1', values)
             txt = f'| fundamental_v1 | Run'
