@@ -25,11 +25,19 @@ for key, value in secrets.items():
 today = utils.dt2str(datetime.today())
 
 
-def rep_0(text):
+def replace_zero(text):
     text = text.replace(',', '')
     if text == '-':
         return None
     return text
+
+
+def calc_roe(eps, bps):
+    eps = replace_zero(eps)
+    bps = replace_zero(bps)
+    if eps == None or bps == None:
+        return None
+    return str(round(float(eps) / float(bps) * 100, 2))
 
 
 ### functions
@@ -69,11 +77,15 @@ def fundamental_v1():
             values = []
             for stock in data:
                 value = (
-                    adj_date, stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
-                    rep_0(stock['EPS']), rep_0(stock['PER']),
-                    rep_0(stock['BPS']), rep_0(stock['PBR']),
-                    rep_0(stock['DPS']), rep_0(stock['DVD_YLD']),
-                    rep_0(round((stock['EPS']/stock['BPS'])*100))   # ROE 계산
+                    adj_date,
+                    stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
+                    replace_zero(stock['EPS']),
+                    replace_zero(stock['PER']),
+                    replace_zero(stock['BPS']), 
+                    replace_zero(stock['PBR']),
+                    replace_zero(stock['DPS']), 
+                    replace_zero(stock['DVD_YLD']),
+                    calc_roe(stock['EPS'], stock['BPS'])   # ROE 계산
                     )
                 values.append(value)
             db.multiInsertDB('fundamental_v1', values)
@@ -99,11 +111,18 @@ def stock_price():
             values = []
             for stock in data:
                 if stock['MKT_NM'] != 'KONEX':
-                    value = (adj_date, stock['ISU_SRT_CD'], stock['MKT_NM'],
-                        rep_0(stock['FLUC_RT']), rep_0(stock['TDD_OPNPRC']),
-                        rep_0(stock['TDD_HGPRC']), rep_0(stock['TDD_LWPRC']),
-                        rep_0(stock['TDD_CLSPRC']), rep_0(stock['ACC_TRDVOL']),
-                        rep_0(stock['ACC_TRDVAL']), rep_0(stock['MKTCAP']))
+                    value = (
+                        adj_date, 
+                        stock['ISU_SRT_CD'], stock['MKT_NM'],
+                        replace_zero(stock['FLUC_RT']), 
+                        replace_zero(stock['TDD_OPNPRC']),
+                        replace_zero(stock['TDD_HGPRC']), 
+                        replace_zero(stock['TDD_LWPRC']),
+                        replace_zero(stock['TDD_CLSPRC']), 
+                        replace_zero(stock['ACC_TRDVOL']),
+                        replace_zero(stock['ACC_TRDVAL']), 
+                        replace_zero(stock['MKTCAP'])
+                        )
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
