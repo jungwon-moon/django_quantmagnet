@@ -18,6 +18,7 @@ class FundamentalV1(models.Model):
     pbr = models.FloatField(blank=True, null=True)
     dps = models.FloatField(blank=True, null=True)
     dvd_yld = models.FloatField(blank=True, null=True)
+    roe = models.FloatField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -38,7 +39,7 @@ class Holiday(models.Model):
 
 
 class StockPrice(models.Model):
-    date = models.TextField(primary_key=True)
+    date = models.CharField(primary_key=True, max_length=8)
     stcd = models.CharField(max_length=6)
     market = models.TextField(blank=True, null=True)
     rate = models.FloatField(blank=True, null=True)

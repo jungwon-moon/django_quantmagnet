@@ -31,6 +31,7 @@ class FundamentalFilter(django_filters.FilterSet):
             'bps': ['gte', 'lte'],
             'pbr': ['gte', 'lte'],
             'dps': ['gte', 'lte'],
+            # 'roe': ['gte', 'lte'],
             'dvd_yld': ['gte', 'lte'],
         }
 
