@@ -34,6 +34,10 @@ Database
 - Postgresql
 
 ---
+## API 명세서
+https://documenter.getpostman.com/view/15790299/UyrBjw6m
+
+---
 ## 제공 서비스 및 설명
 
 ### 종목스크리너
@@ -46,8 +50,12 @@ Database
 ### CAGR(복합 연평균 성장률) 계산기
 [자산가치 계산기](#자산가치-계산기)에서 사용되는 연이율은 단순 매년 수익률이 아니라 *오랜 기간 수익률과 손실률을 포함한 수익률*의 평균(**CAGR**) 을 사용해야 합니다. 
 <br>CAGR을 설명하기 위한 예로 2000년 코스피 지수는 504에서 2020년 2873이 되었습니다. 20년동안 크고 작은 낙폭이 있었지만 결과적으로 **20년간 수익률은 약 470%** 가 되었습니다.
-<p align="center" sytle="background-color:#ffffff"><img src="https://render.githubusercontent.com/render/math?math=504%20\times%20(1.0909)^{20}%20\approx%202873"></p>
-위 식을 살펴보면 매년 9.09% 수익률을 얻을 수 있다면 20년 후에 2873가 됩니다. 이때 매년 평균적으로 발생하는 9.09%의 수익률을 **CAGR**(복합 연평균 성장률)이라고 합니다. 
+
+<p style="background-color:white" align="center"><img sytle="color:#ffffff" src="https://render.githubusercontent.com/render/math?math=504%20\times%20(1.0909)^{20}%20\approx%202873"></p>
+
+위 식을 살펴보면 매년 9.09% 수익률을 얻을 수 있다면 20년 후에 2873가 됩니다. 이때 매년 평균적으로 발생하는 9.09%의 수익률을 **CAGR** (복합 연평균 성장률)이라고 합니다. 
+
+
 
 <!-- 
 ## 아키텍처
