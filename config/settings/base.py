@@ -10,14 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import os
 import sys
 import json
 from pathlib import Path
 from qm.db.DB import DBINFO
 
+SECRET_KEY = ""
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PARENT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 SECRET_PATH = BASE_DIR / 'config/.config_secret'
@@ -37,17 +36,20 @@ for key, value in secrets.items():
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.auth',  # 인증
+    'django.contrib.sessions',  # 세션
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.contenttypes',
+
     'rest_framework',
     'rest_framework_api_key',
     'django_filters',
     'django_crontab',
+    'knox',  # 토큰 인증
 
     'api.apps.ApiConfig',
+    'account.apps.AccountConfig',
     'common.apps.CommonConfig',
     'calculator.apps.CalculatorConfig',
     'strategy.apps.StrategyConfig',
@@ -58,8 +60,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # 세션 관리
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -67,11 +68,11 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
-    'DEFAULT_PAGINATION_CLASS': [
-        'rest_framework.pagination.LimitOffsetPagination',
-        'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
     'PAGE_SIZE': 1000
 }
 
@@ -97,16 +98,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+    'http://localhost:3000',  # Dev
     'http://localhost:80',
-    'http://127.0.0.1:80',
     'http://localhost:8000',
-    'http://127.0.0.1:8000',
-
 ]
 
 
@@ -133,11 +130,11 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTER=[
+DATABASE_ROUTER = [
     'config.router.MultiDBRouter',
 ]
 
-CRONJOBS =[
+CRONJOBS = [
     ### 분 시 일 월 요일
     ("0 8 * * 1-5", "common.scraping.crontab_daily.holiday"),
     ("0 16 * * 1-5", "common.scraping.crontab_daily.stock_price"),
@@ -204,5 +201,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # 세션 타임 아웃
-SESSION_COOKIE_AGE = 1200 # 20분
+SESSION_COOKIE_AGE = 1200  # 20분
 SESSION_SAVE_EVERY_REQUEST = True
