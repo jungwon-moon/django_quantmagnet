@@ -23,5 +23,4 @@ class HolydayAdmin(admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
-
 admin.site.register(Holiday, HolydayAdmin)

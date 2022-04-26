@@ -15,20 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from common import views as common
+# from common import views as common
 
 urlpatterns = [
     # main 화면
-    path('', common.main, name='main'),
+    # path('', common.main, name='main'),
     # admin
     path('admin/', admin.site.urls),
-
     # 로그인/회원가입
-    path('common/', include('common.urls')),
+    path('auth/', include('account.urls')),
+    # path('common/', include('common.urls')),
     # API
     path('api/', include('api.urls')),
     # 투자 계산기
-    path('calculator/', include('calculator.urls')),
+    # path('calculator/', include('calculator.urls')),
     # 투자 전략
-    path('strategy/', include('strategy.urls')),
+    # path('strategy/', include('strategy.urls')),
 ]
