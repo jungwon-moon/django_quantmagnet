@@ -1,12 +1,11 @@
-from django.contrib.auth import login, logout
-from rest_framework import generics, permissions, views, status
-from rest_framework.response import Response
 from .serializers import *
+from django.contrib.auth import login, logout
+from rest_framework import generics, views, status
+from rest_framework.response import Response
 
 
 class LoginView(views.APIView):
   authentication_classes = []
-  permissions_classes = [permissions.AllowAny]
 
   def post(self, request, format=None):
     serializer = LoginSerializer(data=self.request.data,
@@ -18,7 +17,6 @@ class LoginView(views.APIView):
 
 
 class ProfileView(generics.RetrieveAPIView):
-  permissions_classes = [permissions.AllowAny]
   serializer_class = UserSerializer
 
   def get_object(self):
@@ -27,7 +25,6 @@ class ProfileView(generics.RetrieveAPIView):
 
 class LogoutView(views.APIView):
   authentication_classes = []
-  permissions_classes = [permissions.AllowAny]
 
   def post(self, request, format=None):
     logout(request)
@@ -35,6 +32,35 @@ class LogoutView(views.APIView):
 
 
 class RegisterView(generics.CreateAPIView):
+  authentication_classes = []
   queryset = User.objects.all()
-  permission_classes = [permissions.AllowAny]
   serializer_class = RegisterSerializer
+
+
+# # UniqueCheck
+class EmailUniqueCheck(generics.CreateAPIView):
+  authentication_classes = []
+  serializer_class = EmailUniqueCheckSerializer
+
+  def post(self, request, format=None):
+    serializer = self.get_serializer(data=request.data, context={'request': request})  
+    if serializer.is_valid():
+      return Response(data={'detail':['사용할 수 있는 이메일입니다.']}, status=status.HTTP_200_OK)
+    else:
+      detail = dict()
+      detail['detail'] = serializer.errors['email']
+      return Response(data=detail, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsernameUniqueCheck(generics.CreateAPIView):
+  authentication_classes = []
+  serializer_class = UsernameUniqueCheckSerializer
+
+  def post(self, request, format=None):
+    serializer = self.get_serializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+      return Response(data={'detail':['사용할 수 있는 아이디입니다.']}, status=status.HTTP_200_OK)
+    else:
+      detail = dict()
+      detail['detail'] = serializer.errors['username']
+      return Response(data=detail, status=status.HTTP_400_BAD_REQUEST)
