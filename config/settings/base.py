@@ -73,7 +73,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
     'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
-    'PAGE_SIZE': 1000
+    'PAGE_SIZE': 10
 }
 
 ROOT_URLCONF = 'config.urls'
@@ -177,7 +177,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # manage.py collectstatic 실행시 저장되는 static 경로
 STATIC_ROOT = PARENT_DIR / "react_quantmagnet/public/static"
