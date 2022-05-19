@@ -50,10 +50,9 @@ INSTALLED_APPS = [
 
     'api.apps.ApiConfig',
     'account.apps.AccountConfig',
-    'common.apps.CommonConfig',
-    'calculator.apps.CalculatorConfig',
-    'strategy.apps.StrategyConfig',
-    'indices.apps.IndicesConfig',
+    # 'common.apps.CommonConfig',
+    # 'calculator.apps.CalculatorConfig',
+    # 'strategy.apps.StrategyConfig',
 ]
 
 MIDDLEWARE = [
