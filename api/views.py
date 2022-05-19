@@ -1,7 +1,7 @@
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from rest_framework.pagination import LimitOffsetPagination
 from api.models import *
 from api.serializers import *
 
@@ -11,6 +11,7 @@ class HolidayPagination(LimitOffsetPagination):
     default_limit = 100
     max_limit = 100
 
+
 class HolidayList(generics.ListAPIView):
     using = 'gcp'
     queryset = Holiday.objects.using(using).all()
@@ -19,12 +20,14 @@ class HolidayList(generics.ListAPIView):
     pagination_class = HolidayPagination
     search_fields = ['^calnd_dd']
 
+
 # 밸류에이션
-class FundamentalFilter(django_filters.FilterSet):
+class ValuationFilter(django_filters.FilterSet):
     class Meta:
-        model = FundamentalV1
+        model = Valuation
         fields = {
             'date': ['contains'],
+            'stcd': ['contains'],
             'eps': ['gte', 'lte'],
             'per': ['gte', 'lte'],
             'bps': ['gte', 'lte'],
@@ -34,19 +37,21 @@ class FundamentalFilter(django_filters.FilterSet):
             'dvd_yld': ['gte', 'lte'],
         }
 
-class FundamentalPagination(LimitOffsetPagination):
+
+class ValuationPagination(LimitOffsetPagination):
     default_limit = 2500
     max_limit = 2500
 
-class FundamentalList(generics.ListAPIView):
+
+class ValuationList(generics.ListAPIView):
     using = 'gcp'
-    queryset = FundamentalV1.objects.using(using).all()
+    queryset = Valuation.objects.using(using).all()
     serializer_class = FundamentalSerializer
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    filter_class = FundamentalFilter
-    pagination_class= FundamentalPagination
+    filter_class = ValuationFilter
+    pagination_class = ValuationPagination
     ordering_fields = ['stcd']
     ordering = ['stcd']

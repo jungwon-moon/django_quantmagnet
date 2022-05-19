@@ -15,5 +15,5 @@ class StockPriceSerializer(serializers.ModelSerializer):
 
 class FundamentalSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FundamentalV1
+        model = Valuation
         fields = '__all__'

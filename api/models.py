@@ -1,7 +1,8 @@
 from django.db import models
 
 # # STOCK 
-class FundamentalV1(models.Model):
+# class FundamentalV1(models.Model):
+class Valuation(models.Model):
     date = models.CharField(primary_key=True, max_length=8)
     stcd = models.CharField(max_length=6)
     stnm = models.TextField(blank=True, null=True)
@@ -15,7 +16,7 @@ class FundamentalV1(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'fundamental_v1'
+        db_table = 'valuation'
         unique_together = (('date', 'stcd'),)
 
 
