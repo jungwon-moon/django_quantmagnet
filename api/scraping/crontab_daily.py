@@ -66,7 +66,7 @@ def holiday():
             requests.post(slack_url, headers=headers, data=txt)
 
 
-def fundamental_v1():
+def valiation():
     # 실행일과 거래일이 일치하는지 확인
     global today
     adj_date = utils.check_trading_day(today)
@@ -81,20 +81,20 @@ def fundamental_v1():
                     stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
                     replace_zero(stock['EPS']),
                     replace_zero(stock['PER']),
-                    replace_zero(stock['BPS']), 
+                    replace_zero(stock['BPS']),
                     replace_zero(stock['PBR']),
-                    replace_zero(stock['DPS']), 
+                    replace_zero(stock['DPS']),
                     replace_zero(stock['DVD_YLD']),
                     calc_roe(stock['EPS'], stock['BPS'])   # ROE 계산
-                    )
+                )
                 values.append(value)
-            db.multiInsertDB('fundamental_v1', values)
-            txt = f'| fundamental_v1 | Run'
+            db.multiInsertDB('valiation', values)
+            txt = f'| valiation | Run'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'| fundamental_v1 | * Error * : {e}'
+            txt = f'| valiation | * Error * : {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -112,17 +112,17 @@ def stock_price():
             for stock in data:
                 if stock['MKT_NM'] != 'KONEX':
                     value = (
-                        adj_date, 
+                        adj_date,
                         stock['ISU_SRT_CD'], stock['MKT_NM'],
-                        replace_zero(stock['FLUC_RT']), 
+                        replace_zero(stock['FLUC_RT']),
                         replace_zero(stock['TDD_OPNPRC']),
-                        replace_zero(stock['TDD_HGPRC']), 
+                        replace_zero(stock['TDD_HGPRC']),
                         replace_zero(stock['TDD_LWPRC']),
-                        replace_zero(stock['TDD_CLSPRC']), 
+                        replace_zero(stock['TDD_CLSPRC']),
                         replace_zero(stock['ACC_TRDVOL']),
-                        replace_zero(stock['ACC_TRDVAL']), 
+                        replace_zero(stock['ACC_TRDVAL']),
                         replace_zero(stock['MKTCAP'])
-                        )
+                    )
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
