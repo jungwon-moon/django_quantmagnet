@@ -115,6 +115,7 @@ def stock_price():
                         adj_date,
                         stock['ISU_SRT_CD'], stock['MKT_NM'],
                         replace_zero(stock['FLUC_RT']),
+                        replace_zero(stock['CMPPREVDD_PRC']),  # 대비
                         replace_zero(stock['TDD_OPNPRC']),
                         replace_zero(stock['TDD_HGPRC']),
                         replace_zero(stock['TDD_LWPRC']),

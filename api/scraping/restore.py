@@ -32,7 +32,7 @@ def replace_zero(text):
     return text
 
 
-def stock_price_restore():
+def stock_price_restore(date=date):
     adj_date = utils.check_trading_day(date)
     # print('date:', date)
     # print('adj_date:', adj_date)
@@ -44,7 +44,8 @@ def stock_price_restore():
             if stock['MKT_NM'] != 'KONEX':
                 value = (
                     adj_date, stock['ISU_SRT_CD'], stock['MKT_NM'],
-                    replace_zero(stock['FLUC_RT']),
+                    replace_zero(stock['FLUC_RT']), # 등락률
+                    replace_zero(stock['CMPPREVDD_PRC']), # 대비
                     replace_zero(stock['TDD_OPNPRC']),
                     replace_zero(stock['TDD_HGPRC']), 
                     replace_zero(stock['TDD_LWPRC']),
@@ -106,8 +107,8 @@ yy = '2021'
 
 st = datetime.today()
 
-# stock_price_restore()
-valuation_restore('20220520')
+stock_price_restore('20220520')
+# valuation_restore('20220520')
 
 # for yy in range(2000, 2021):
 # print(yy)

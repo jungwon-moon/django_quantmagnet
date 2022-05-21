@@ -13,7 +13,7 @@ class StockPriceSerializer(serializers.ModelSerializer):
         model = StockPrice
         fields = '__all__'
 
-class FundamentalSerializer(serializers.ModelSerializer):
+class ValuationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Valuation
         fields = '__all__'

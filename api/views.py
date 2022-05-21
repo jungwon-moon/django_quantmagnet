@@ -46,12 +46,39 @@ class ValuationPagination(LimitOffsetPagination):
 class ValuationList(generics.ListAPIView):
     using = 'gcp'
     queryset = Valuation.objects.using(using).all()
-    serializer_class = FundamentalSerializer
+    serializer_class = ValuationSerializer
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
     ]
     filter_class = ValuationFilter
     pagination_class = ValuationPagination
+    ordering_fields = ['stcd']
+    ordering = ['stcd']
+
+
+# 주가 조회
+class StockPriceFilter(django_filters.FilterSet):
+    class Meta:
+        model = StockPrice
+        fields = {
+            'date': ['contains'],
+            'stcd': ['contains'],
+        }
+
+class StockPricePagination(LimitOffsetPagination):
+    default_limit = 300
+    max_limit = 3000
+
+class StockPriceList(generics.ListAPIView):
+    using = 'gcp'
+    queryset = StockPrice.objects.using(using).all()
+    serializer_class = StockPriceSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
+    filter_class = StockPriceFilter
+    pagination_class = StockPricePagination
     ordering_fields = ['stcd']
     ordering = ['stcd']

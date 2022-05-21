@@ -1,7 +1,6 @@
 from django.db import models
 
 # # STOCK 
-# class FundamentalV1(models.Model):
 class Valuation(models.Model):
     date = models.CharField(primary_key=True, max_length=8)
     stcd = models.CharField(max_length=6)
@@ -37,6 +36,7 @@ class StockPrice(models.Model):
     stcd = models.CharField(max_length=6)
     market = models.TextField(blank=True, null=True)
     rate = models.FloatField(blank=True, null=True)
+    prevd = models.FloatField(blank=True, null=True)
     open = models.FloatField(blank=True, null=True)
     high = models.FloatField(blank=True, null=True)
     low = models.FloatField(blank=True, null=True)
