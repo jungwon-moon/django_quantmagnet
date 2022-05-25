@@ -72,7 +72,7 @@ def valiation():
     adj_date = utils.check_trading_day(today)
     if adj_date == today:
         try:
-            data = scraping.get_fundamentalv1()
+            data = scraping.get_valuation()
             db = postgres_connect(pgdb_properties)
             values = []
             for stock in data:
