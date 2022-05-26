@@ -45,8 +45,7 @@ def holiday():
 
     # 실행일과 거래일이 일치하는지 확인
     global today
-    adj_date = utils.check_trading_day(today)
-    if adj_date == today:
+    if utils.check_trading_day(today):
         try:
             data = scraping.get_holiday()
             db = postgres_connect(pgdb_properties)
@@ -56,12 +55,12 @@ def holiday():
                 value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
                 db.upsertDB('holiday', value, 'calnd_dd')
 
-            txt = f'| holiday | Run'
+            txt = f'Holiday | Success'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'| holiday | * Error * : {e}'
+            txt = f'Holiday | * Failed * : {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -69,15 +68,14 @@ def holiday():
 def valiation():
     # 실행일과 거래일이 일치하는지 확인
     global today
-    adj_date = utils.check_trading_day(today)
-    if adj_date == today:
+    if utils.check_trading_day(today):
         try:
-            data = scraping.get_valuation()
+            data = scraping.get_valuation(today)
             db = postgres_connect(pgdb_properties)
             values = []
             for stock in data:
                 value = (
-                    adj_date,
+                    today,
                     stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
                     replace_zero(stock['EPS']),
                     replace_zero(stock['PER']),
@@ -89,12 +87,13 @@ def valiation():
                 )
                 values.append(value)
             db.multiInsertDB('valiation', values)
-            txt = f'| valiation | Run'
+
+            txt = f'Valiation | Success'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'| valiation | * Error * : {e}'
+            txt = f'Valiation | * Failed * : {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -102,17 +101,16 @@ def valiation():
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
     global today
-    adj_date = utils.check_trading_day(today)
-    if adj_date == today:
+    if utils.check_trading_day(today):
         try:
-            data = scraping.get_all_stock_price()
+            data = scraping.get_all_stock_price(today)
             db = postgres_connect(pgdb_properties)
 
             values = []
             for stock in data:
                 if stock['MKT_NM'] != 'KONEX':
                     value = (
-                        adj_date,
+                        today,
                         stock['ISU_SRT_CD'], stock['MKT_NM'],
                         replace_zero(stock['FLUC_RT']),
                         replace_zero(stock['CMPPREVDD_PRC']),  # 대비
@@ -127,11 +125,11 @@ def stock_price():
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
-            txt = f'| stock_price | Run'
+            txt = f'Stock_price | Success'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'| stock_price | * Error * : {e}'
+            txt = f'Stock_price | * Failed * : {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
