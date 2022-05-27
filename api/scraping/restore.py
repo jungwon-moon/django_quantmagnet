@@ -49,9 +49,9 @@ def date_range(start, end):
 
 ### Main function
 def stock_price_restore(*dates):
-    for date in dates[0]:
-        # 실행일과 거래일이 일치하는지 확인
-        try:
+    try:
+        for date in dates[0]:
+            # 실행일과 거래일이 일치하는지 확인
             if utils.check_trading_day(date):
                 data = scraping.get_all_stock_price(date)
                 db = postgres_connect(pgdb_properties)
@@ -73,20 +73,20 @@ def stock_price_restore(*dates):
                         values.append(value)
                 db.multiInsertDB('stock_price', values)
 
-                txt = f'Restore valiation | Success: {date}'
-                txt = json.dumps({"text": txt})
-                requests.post(slack_url, headers=headers, data=txt)
+        txt = f'Restore valiation | Success'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
-        except Exception as e:
-            txt = f'Restore valiation | * Failed * : {e}'
-            txt = json.dumps({"text": txt})
-            requests.post(slack_url, headers=headers, data=txt)
+    except Exception as e:
+        txt = f'Restore valiation | {date} * Failed * : {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
 
 def valuation_restore(*dates):
-    for date in dates[0]:
+    try:
+        for date in dates[0]:
         # 실행일과 거래일이 일치하는지 확인
-        try:
             if utils.check_trading_day(date):
                 print('True: ', date)
                 data = scraping.get_valuation(date)
@@ -107,14 +107,14 @@ def valuation_restore(*dates):
                     values.append(value)
                 db.multiInsertDB('valuation', values)
 
-                txt = f'Restore valiation | Success: {date}'
-                txt = json.dumps({"text": txt})
-                requests.post(slack_url, headers=headers, data=txt)
+        txt = f'Restore valiation | Success '
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
-        except Exception as e:
-            txt = f'Restore valiation | * Failed * : {e}'
-            txt = json.dumps({"text": txt})
-            requests.post(slack_url, headers=headers, data=txt)
+    except Exception as e:
+        txt = f'Restore valiation | {date} * Failed * : {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
 
 def holiday_restore():
