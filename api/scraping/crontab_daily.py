@@ -17,7 +17,8 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    if key == 'gcp':
+    # if key == 'gcp':
+    if key == 'lightsail_db':
         pgdb_properties = value
     if key == 'slack_scraping':
         slack_url = value

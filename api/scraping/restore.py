@@ -18,7 +18,8 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    if key == 'gcp':
+    # if key == 'gcp':
+    if key == 'lightsail_db':
         pgdb_properties = value
     if key == 'slack_scraping':
         slack_url = value
@@ -73,12 +74,12 @@ def stock_price_restore(*dates):
                         values.append(value)
                 db.multiInsertDB('stock_price', values)
 
-        txt = f'Restore valiation | Success'
+        txt = f'Restore | Stock_price | Success'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore valiation | {date} * Failed * : {e}'
+        txt = f'Restore | Stock_price | {date} * Failed * : {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -88,7 +89,6 @@ def valuation_restore(*dates):
         for date in dates[0]:
         # 실행일과 거래일이 일치하는지 확인
             if utils.check_trading_day(date):
-                print('True: ', date)
                 data = scraping.get_valuation(date)
                 db = postgres_connect(pgdb_properties)
                 values = []
@@ -107,19 +107,19 @@ def valuation_restore(*dates):
                     values.append(value)
                 db.multiInsertDB('valuation', values)
 
-        txt = f'Restore valiation | Success '
+        txt = f'Restore | Valiation | Success '
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore valiation | {date} * Failed * : {e}'
+        txt = f'Restore | Valiation | {date} * Failed * : {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
 
-def holiday_restore():
+def holiday_restore(yy=None):
     try:
-        data = scraping.get_holiday()
+        data = scraping.get_holiday(yy)
         db = postgres_connect(pgdb_properties)
         values = []
         for row in data:
@@ -128,18 +128,18 @@ def holiday_restore():
             values.append(value)
         db.multiInsertDB('holiday', values)
         
-        txt = f'Restore valiation | Success: {date}'
+        txt = f'Restore | Holiday | Success: {yy}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore valiation | * Failed * : {e}'
+        txt = f'Restore | Holiday | * Failed * : {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
 
 
 ### Run
-dates = date_range('20220501', '20220520')
+dates = date_range('20220302', '20220527')
 # stock_price_restore(dates)
-valuation_restore(dates)
+# valuation_restore(dates)

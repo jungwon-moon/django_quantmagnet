@@ -27,6 +27,8 @@ secrets = json.loads(open(SECRET_FILE).read())
 for key, value in secrets.items():
     if key == "default_db":
         default_db = DBINFO(value)
+    elif key == "lightsail_db":
+        lightsail_db = DBINFO(value)
     elif key == "gcp":
         gcp_db = DBINFO(value)
     else:
@@ -120,6 +122,14 @@ DATABASES = {
         'HOST': default_db.host,
         'PORT': 5432,
     },
+    'lightsail_db': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': lightsail_db.dbname,
+        'USER': lightsail_db.user,
+        'PASSWORD': lightsail_db.password,
+        'HOST': lightsail_db.host,
+        'PORT': 5432,
+    },
     'gcp': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': gcp_db.dbname,
@@ -127,7 +137,7 @@ DATABASES = {
         'PASSWORD': gcp_db.password,
         'HOST': gcp_db.host,
         'PORT': 5432,
-    }
+    },
 }
 
 DATABASE_ROUTER = [

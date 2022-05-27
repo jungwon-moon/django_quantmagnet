@@ -13,7 +13,8 @@ class HolidayPagination(LimitOffsetPagination):
 
 
 class HolidayList(generics.ListAPIView):
-    using = 'gcp'
+    # using = 'gcp'
+    using = 'lightsail_db'
     queryset = Holiday.objects.using(using).all()
     serializer_class = HolidaySerializer
     filter_backends = [filters.SearchFilter]
@@ -44,7 +45,8 @@ class ValuationPagination(LimitOffsetPagination):
 
 
 class ValuationList(generics.ListAPIView):
-    using = 'gcp'
+    # using = 'gcp'
+    using = 'lightsail_db'
     queryset = Valuation.objects.using(using).all()
     serializer_class = ValuationSerializer
     filter_backends = [
@@ -71,7 +73,8 @@ class StockPricePagination(LimitOffsetPagination):
     max_limit = 3000
 
 class StockPriceList(generics.ListAPIView):
-    using = 'gcp'
+    # using = 'gcp'
+    using = 'lightsail_db'
     queryset = StockPrice.objects.using(using).all()
     serializer_class = StockPriceSerializer
     filter_backends = [
