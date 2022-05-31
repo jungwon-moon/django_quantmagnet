@@ -1,8 +1,10 @@
 from django.db import models
 
-# # STOCK 
+# # STOCK
+
+
 class Valuation(models.Model):
-    date = models.CharField(primary_key=True, max_length=8)
+    date = models.CharField(max_length=8)
     stcd = models.CharField(max_length=6)
     stnm = models.TextField(blank=True, null=True)
     eps = models.FloatField(blank=True, null=True)
@@ -32,7 +34,7 @@ class Holiday(models.Model):
 
 
 class StockPrice(models.Model):
-    date = models.CharField(primary_key=True, max_length=8)
+    date = models.CharField(max_length=8)
     stcd = models.CharField(max_length=6)
     market = models.TextField(blank=True, null=True)
     rate = models.FloatField(blank=True, null=True)
@@ -44,8 +46,18 @@ class StockPrice(models.Model):
     volume = models.FloatField(blank=True, null=True)
     values = models.FloatField(blank=True, null=True)
     capital = models.FloatField(blank=True, null=True)
-    
+
     class Meta:
         managed = False
         db_table = 'stock_price'
         unique_together = (('date', 'stcd'),)
+
+
+class Stocks(models.Model):
+    stcd = models.CharField(max_length=6)
+    stnm = models.TextField(blank=True, null=True)
+    market = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'stocks'

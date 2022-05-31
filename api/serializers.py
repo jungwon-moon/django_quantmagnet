@@ -17,3 +17,8 @@ class ValuationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Valuation
         fields = '__all__'
+
+class SearchStockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stocks
+        fields = '__all__'

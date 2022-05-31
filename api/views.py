@@ -5,6 +5,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from api.models import *
 from api.serializers import *
 
+
 # # STOCK
 # 휴장일
 class HolidayPagination(LimitOffsetPagination):
@@ -13,7 +14,6 @@ class HolidayPagination(LimitOffsetPagination):
 
 
 class HolidayList(generics.ListAPIView):
-    # using = 'gcp'
     using = 'lightsail_db'
     queryset = Holiday.objects.using(using).all()
     serializer_class = HolidaySerializer
@@ -45,7 +45,6 @@ class ValuationPagination(LimitOffsetPagination):
 
 
 class ValuationList(generics.ListAPIView):
-    # using = 'gcp'
     using = 'lightsail_db'
     queryset = Valuation.objects.using(using).all()
     serializer_class = ValuationSerializer
@@ -68,12 +67,13 @@ class StockPriceFilter(django_filters.FilterSet):
             'stcd': ['contains'],
         }
 
+
 class StockPricePagination(LimitOffsetPagination):
     default_limit = 300
     max_limit = 3000
 
+
 class StockPriceList(generics.ListAPIView):
-    # using = 'gcp'
     using = 'lightsail_db'
     queryset = StockPrice.objects.using(using).all()
     serializer_class = StockPriceSerializer
@@ -85,3 +85,12 @@ class StockPriceList(generics.ListAPIView):
     pagination_class = StockPricePagination
     ordering_fields = ['stcd']
     ordering = ['stcd']
+
+
+# 종목 검색
+class SearchStockList(generics.ListAPIView):
+    using = 'lightsail_db'
+    queryset = Stocks.objects.using(using).all()
+    serializer_class = SearchStockSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^stcd', '^stnm']

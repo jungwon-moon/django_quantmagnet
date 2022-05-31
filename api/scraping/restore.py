@@ -18,7 +18,6 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    # if key == 'gcp':
     if key == 'lightsail_db':
         pgdb_properties = value
     if key == 'slack_scraping':
@@ -140,6 +139,7 @@ def holiday_restore(yy=None):
 
 
 ### Run
-dates = date_range('20220302', '20220527')
+# holiday_restore('2022')
+dates = date_range('20220101', '20220530')
 # stock_price_restore(dates)
 # valuation_restore(dates)
