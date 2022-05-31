@@ -1,8 +1,7 @@
 from django.db import models
 
+
 # # STOCK
-
-
 class Valuation(models.Model):
     date = models.CharField(max_length=8)
     stcd = models.CharField(max_length=6)
@@ -55,7 +54,7 @@ class StockPrice(models.Model):
 
 class Stocks(models.Model):
     stcd = models.CharField(max_length=6)
-    stnm = models.TextField(blank=True, null=True)
+    stnm = models.TextField(primary_key=True)
     market = models.TextField(blank=True, null=True)
 
     class Meta:
