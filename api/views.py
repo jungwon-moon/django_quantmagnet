@@ -54,8 +54,8 @@ class ValuationList(generics.ListAPIView):
     ]
     filter_class = ValuationFilter
     pagination_class = ValuationPagination
-    ordering_fields = ['stcd']
-    ordering = ['stcd']
+    ordering_fields = ['date']
+    ordering = ['date']
 
 
 # 주가 조회
@@ -83,8 +83,8 @@ class StockPriceList(generics.ListAPIView):
     ]
     filter_class = StockPriceFilter
     pagination_class = StockPricePagination
-    ordering_fields = ['stcd']
-    ordering = ['stcd']
+    ordering_fields = ['date']
+    ordering = ['date']
 
 
 # 종목 검색
