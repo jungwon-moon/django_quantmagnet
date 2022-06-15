@@ -6,23 +6,23 @@ from qm.db.connect import postgres_connect
 from qm import scraping, utils
 
 
-### slack webhook connect
 headers = {
     "Content-type": "application/json"
 }
 
-
-### postgresql connect
 SECRET_PATH = Path(__file__).resolve().parent.parent.parent
 SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
+### postgresql connect
     if key == 'lightsail_db':
         pgdb_properties = value
+### slack webhook connect
     if key == 'slack_scraping':
         slack_url = value
 
+time = utils.dt2str(datetime.today(), 'time')
 date = utils.dt2str(datetime.today())
 
 
@@ -137,9 +137,35 @@ def holiday_restore(yy=None):
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def category_keywords(time):
+    try:
+        data = scraping.get_category_keywords()['categoryKeyword']
+        db = postgres_connect(pgdb_properties)
+        values = []
+        for row in data:
+            value = (
+                time,
+                row['CATEGORY_CODE'],
+                row['CATEGORY_NAME'],
+                row['NAMED_ENTITY'],
+                row['NAMED_ENTITY_TYPE'],
+                row['NAMED_ENTITY_COUNT'],
+            )
+            values.append(value)
+        db.multiInsertDB('category_keywords', values)
+        txt = f'category_keyword | Success' 
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'category_keyword | * Failed * : {e}' 
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
 
 ### Run
 # holiday_restore('2022')
-dates = date_range('20220101', '20220530')
+# dates = date_range('20220101', '20220530')
 # stock_price_restore(dates)
 # valuation_restore(dates)
+# category_keywords(time)

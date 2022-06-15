@@ -149,6 +149,8 @@ CRONJOBS = [
     ("0 8 * * 1-5", "api.scraping.crontab_daily.holiday"),
     ("0 16 * * 1-5", "api.scraping.crontab_daily.stock_price"),
     ("0 16 * * 1-5", "api.scraping.crontab_daily.valiation"),
+    # categoryKeywords
+    ("5 */3 * * *", "api.scraping.crontab.category_keywords"),
 ]
 
 # Password validation

@@ -6,19 +6,19 @@ from qm.db.connect import postgres_connect
 from qm import scraping, utils
 
 
-### slack webhook connect
 headers = {
     "Content-type": "application/json"
 }
 
-### postgresql connect
 SECRET_PATH = Path(__file__).resolve().parent.parent.parent
 SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
+### postgresql connect
     if key == 'lightsail_db':
         pgdb_properties = value
+### slack webhook connect
     if key == 'slack_scraping':
         slack_url = value
 

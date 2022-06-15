@@ -60,3 +60,16 @@ class Stocks(models.Model):
     class Meta:
         managed = False
         db_table = 'stocks'
+
+
+class CategoryKeywords(models.Model):
+    date = models.CharField(max_length=12)
+    category_code = models.CharField(max_length=9)
+    category_name = models.TextField()
+    named_entity = models.TextField()
+    named_entity_type = models.TextField()
+    named_entity_count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'category_keywords'
