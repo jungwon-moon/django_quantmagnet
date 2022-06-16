@@ -94,3 +94,32 @@ class SearchStockList(generics.ListAPIView):
     serializer_class = SearchStockSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['^stcd', '^stnm']
+
+
+# 클라우드 워드 키워드 조회
+class CategoryKeywordsFilter(django_filters.FilterSet):
+    class Meta:
+        model = CategoryKeywords
+        fields = {
+            'date': ['contains'],
+            'category_code': ['contains']
+        }
+
+
+class CategoryKeywordsPagination(LimitOffsetPagination):
+    default_limit = 500
+    max_limit = 500
+
+
+class CategoryKeywordsList(generics.ListAPIView):
+    using = 'lightsail_db'
+    queryset = CategoryKeywords.objects.using(using).all()
+    serializer_class = CategoryKeywordsSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
+    filter_class = CategoryKeywordsFilter
+    pagination_class = CategoryKeywordsPagination
+    ordering_fields = ['date']
+    ordering = ['date']

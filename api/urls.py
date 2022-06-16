@@ -8,6 +8,7 @@ urlpatterns = [
     path("kr/holiday/", HolidayList.as_view(), name='holiday'),
     path("kr/valuation/", ValuationList.as_view(), name='valuation'),
     path("kr/stockprice/", StockPriceList.as_view(), name='stockprice'),
-    path("kr/searchstock/", SearchStockList.as_view(), name='searchstock')
     ###  ###
+    path("searchstock/", SearchStockList.as_view(), name='searchstock'),
+    path("categorykeywords/", CategoryKeywordsList.as_view(), name='categorykeywords'),
 ]

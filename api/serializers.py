@@ -22,3 +22,8 @@ class SearchStockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stocks
         fields = '__all__'
+
+class CategoryKeywordsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategoryKeywords
+        fields = ['date', 'category_code', 'named_entity', 'named_entity_count']

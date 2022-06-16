@@ -62,8 +62,9 @@ class Stocks(models.Model):
         db_table = 'stocks'
 
 
+# # 
 class CategoryKeywords(models.Model):
-    date = models.CharField(max_length=12)
+    date = models.CharField(max_length=12, primary_key=True)
     category_code = models.CharField(max_length=9)
     category_name = models.TextField()
     named_entity = models.TextField()
@@ -73,3 +74,4 @@ class CategoryKeywords(models.Model):
     class Meta:
         managed = False
         db_table = 'category_keywords'
+        # unique_together = (('date', 'stcd'),)
