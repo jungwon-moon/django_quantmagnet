@@ -27,7 +27,6 @@ time = utils.dt2str(datetime.today(), 'time')
 
 
 def category_keywords():
-    global time
     try:
         data = scraping.get_category_keywords()['categoryKeyword']
         db = postgres_connect(pgdb_properties)
@@ -51,5 +50,3 @@ def category_keywords():
         txt = f'category_keyword | * Failed * : {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
-
-category_keywords()
