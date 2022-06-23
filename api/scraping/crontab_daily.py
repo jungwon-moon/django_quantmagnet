@@ -15,10 +15,10 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-### postgresql connect
+    ### postgresql connect
     if key == 'lightsail_db':
         pgdb_properties = value
-### slack webhook connect
+    ### slack webhook connect
     if key == 'slack_scraping':
         slack_url = value
 
@@ -109,19 +109,33 @@ def stock_price():
             values = []
             for stock in data:
                 if stock['MKT_NM'] != 'KONEX':
-                    value = (
-                        today,
-                        stock['ISU_SRT_CD'], stock['MKT_NM'],
-                        replace_zero(stock['FLUC_RT']),
-                        replace_zero(stock['CMPPREVDD_PRC']),  # 대비
-                        replace_zero(stock['TDD_OPNPRC']),
-                        replace_zero(stock['TDD_HGPRC']),
-                        replace_zero(stock['TDD_LWPRC']),
-                        replace_zero(stock['TDD_CLSPRC']),
-                        replace_zero(stock['ACC_TRDVOL']),
-                        replace_zero(stock['ACC_TRDVAL']),
-                        replace_zero(stock['MKTCAP'])
-                    )
+                    # 거래량이 0일때 시,고,저가 데이터를 종가로 변경
+                    if stock['ACC_TRDVOL'] == '0':
+                        value = (
+                            today, stock['ISU_SRT_CD'], stock['MKT_NM'],
+                            replace_zero(stock['FLUC_RT']),  # 등락률
+                            replace_zero(stock['CMPPREVDD_PRC']),  # 대비
+                            replace_zero(stock['TDD_CLSPRC']),
+                            replace_zero(stock['TDD_CLSPRC']),
+                            replace_zero(stock['TDD_CLSPRC']),
+                            replace_zero(stock['TDD_CLSPRC']),
+                            replace_zero(stock['ACC_TRDVOL']),
+                            replace_zero(stock['ACC_TRDVAL']),
+                            replace_zero(stock['MKTCAP'])
+                        )
+                    else:
+                        value = (
+                            today, stock['ISU_SRT_CD'], stock['MKT_NM'],
+                            replace_zero(stock['FLUC_RT']),  # 등락률
+                            replace_zero(stock['CMPPREVDD_PRC']),  # 대비
+                            replace_zero(stock['TDD_OPNPRC']),
+                            replace_zero(stock['TDD_HGPRC']),
+                            replace_zero(stock['TDD_LWPRC']),
+                            replace_zero(stock['TDD_CLSPRC']),
+                            replace_zero(stock['ACC_TRDVOL']),
+                            replace_zero(stock['ACC_TRDVAL']),
+                            replace_zero(stock['MKTCAP'])
+                        )
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
