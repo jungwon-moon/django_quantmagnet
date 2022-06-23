@@ -18,7 +18,7 @@ for key, value in secrets.items():
     ### postgresql connect
     if key == 'lightsail_db':
         pgdb_properties = value
-### slack webhook connect
+    ### slack webhook connect
     if key == 'slack_scraping':
         slack_url = value
 
