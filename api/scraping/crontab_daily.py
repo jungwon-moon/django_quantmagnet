@@ -44,7 +44,6 @@ def calc_roe(eps, bps):
 def holiday():
 
     # 실행일과 거래일이 일치하는지 확인
-    global today
     if utils.check_trading_day(today):
         try:
             data = scraping.get_holiday()
@@ -67,7 +66,6 @@ def holiday():
 
 def valiation():
     # 실행일과 거래일이 일치하는지 확인
-    global today
     if utils.check_trading_day(today):
         try:
             data = scraping.get_valuation(today)
@@ -75,18 +73,18 @@ def valiation():
             values = []
             for stock in data:
                 value = (
-                    today,
-                    stock['ISU_SRT_CD'], stock['ISU_ABBRV'],
+                    today, stock['ISU_SRT_CD'],
+                    stock['ISU_ABBRV'],
                     replace_zero(stock['EPS']),
                     replace_zero(stock['PER']),
                     replace_zero(stock['BPS']),
                     replace_zero(stock['PBR']),
                     replace_zero(stock['DPS']),
                     replace_zero(stock['DVD_YLD']),
-                    calc_roe(stock['EPS'], stock['BPS'])   # ROE 계산
+                    calc_roe(stock['EPS'], stock['BPS'])   # ROE
                 )
                 values.append(value)
-            db.multiInsertDB('valiation', values)
+            db.multiInsertDB('valuation', values)
 
             txt = f'Valiation | Success'
             txt = json.dumps({"text": txt})
@@ -100,7 +98,6 @@ def valiation():
 
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
-    global today
     if utils.check_trading_day(today):
         try:
             data = scraping.get_all_stock_price(today)
