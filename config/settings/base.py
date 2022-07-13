@@ -29,8 +29,6 @@ for key, value in secrets.items():
         default_db = DBINFO(value)
     elif key == "lightsail_db":
         lightsail_db = DBINFO(value)
-    elif key == "gcp":
-        gcp_db = DBINFO(value)
     else:
         setattr(sys.modules[__name__], key, value)
 
@@ -52,9 +50,6 @@ INSTALLED_APPS = [
 
     'api.apps.ApiConfig',
     'account.apps.AccountConfig',
-    # 'common.apps.CommonConfig',
-    # 'calculator.apps.CalculatorConfig',
-    # 'strategy.apps.StrategyConfig',
 ]
 
 MIDDLEWARE = [
@@ -106,6 +101,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',  # React
     'http://localhost:80',  # Nginx
     'http://localhost:8000',  # Djgango
+    'http://localhost:8080',  # Django-Admin
 ]
 
 
@@ -128,14 +124,6 @@ DATABASES = {
         'USER': lightsail_db.user,
         'PASSWORD': lightsail_db.password,
         'HOST': lightsail_db.host,
-        'PORT': 5432,
-    },
-    'gcp': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': gcp_db.dbname,
-        'USER': gcp_db.user,
-        'PASSWORD': gcp_db.password,
-        'HOST': gcp_db.host,
         'PORT': 5432,
     },
 }

@@ -4,7 +4,7 @@ from api.models import *
 
 
 class HolydayAdmin(admin.ModelAdmin):
-    using = 'gcp'
+    using = 'lightsail_db'
     search_fields = ['calnd_dd']
     list_display = ['calnd_dd', 'kr_dy_tp', 'holdy_nm']
 

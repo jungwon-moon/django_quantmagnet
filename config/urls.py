@@ -1,34 +1,11 @@
-"""config URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-# from common import views as common
 
 urlpatterns = [
-    # main 화면
-    # path('', common.main, name='main'),
     # admin
     path('admin/', admin.site.urls),
     # 로그인/회원가입
     path('auth/', include('account.urls')),
-    # path('common/', include('common.urls')),
     # API
     path('api/', include('api.urls')),
-    # 투자 계산기
-    # path('calculator/', include('calculator.urls')),
-    # 투자 전략
-    # path('strategy/', include('strategy.urls')),
 ]
