@@ -107,8 +107,8 @@ class CategoryKeywordsFilter(django_filters.FilterSet):
 
 
 class CategoryKeywordsPagination(LimitOffsetPagination):
-    default_limit = 500
-    max_limit = 500
+    default_limit = 100
+    max_limit = 100
 
 
 class CategoryKeywordsList(generics.ListAPIView):
