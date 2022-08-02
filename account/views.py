@@ -26,7 +26,7 @@ class ProfileView(generics.RetrieveAPIView):
 class LogoutView(views.APIView):
   authentication_classes = []
 
-  def post(self, request, format=None):
+  def get(self, request, format=None):
     logout(request)
     return Response(None, status=status.HTTP_204_NO_CONTENT)
 
@@ -43,9 +43,10 @@ class EmailUniqueCheck(generics.CreateAPIView):
   serializer_class = EmailUniqueCheckSerializer
 
   def post(self, request, format=None):
-    serializer = self.get_serializer(data=request.data, context={'request': request})  
+    serializer = self.get_serializer(
+        data=request.data, context={'request': request})
     if serializer.is_valid():
-      return Response(data={'detail':['사용할 수 있는 이메일입니다.']}, status=status.HTTP_200_OK)
+      return Response(data={'detail': ['사용할 수 있는 이메일입니다.']}, status=status.HTTP_200_OK)
     else:
       detail = dict()
       detail['detail'] = serializer.errors['email']
@@ -57,9 +58,10 @@ class UsernameUniqueCheck(generics.CreateAPIView):
   serializer_class = UsernameUniqueCheckSerializer
 
   def post(self, request, format=None):
-    serializer = self.get_serializer(data=request.data, context={'request': request})
+    serializer = self.get_serializer(
+        data=request.data, context={'request': request})
     if serializer.is_valid():
-      return Response(data={'detail':['사용할 수 있는 아이디입니다.']}, status=status.HTTP_200_OK)
+      return Response(data={'detail': ['사용할 수 있는 아이디입니다.']}, status=status.HTTP_200_OK)
     else:
       detail = dict()
       detail['detail'] = serializer.errors['username']

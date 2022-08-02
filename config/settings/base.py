@@ -89,7 +89,6 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',  # React
     'http://localhost:80',  # Nginx
     'http://localhost:8000',  # Djgango
-    'http://localhost:8080',  # Django-Admin
 ]
 
 

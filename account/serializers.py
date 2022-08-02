@@ -8,12 +8,12 @@ from django.contrib.auth.password_validation import validate_password
 class LoginSerializer(serializers.Serializer):
   username = serializers.CharField(
       label="Username",
-      write_only=True  )
+      write_only=True)
   password = serializers.CharField(
       label="Password",
       style={'input_type': 'password'},
       trim_whitespace=False,
-      write_only=True  )
+      write_only=True)
 
   def validate(self, attrs):
     username = attrs.get('username')
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(
       required=True,
-      validators=[UniqueValidator(queryset=User.objects.all())]  )
+      validators=[UniqueValidator(queryset=User.objects.all())])
   password = serializers.CharField(
       write_only=True, required=True, validators=[validate_password])
   password2 = serializers.CharField(write_only=True, required=True)
@@ -79,7 +79,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class EmailUniqueCheckSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(
       required=True,
-      validators=[UniqueValidator(queryset=User.objects.all())]  )
+      validators=[UniqueValidator(queryset=User.objects.all())])
 
   class Meta:
     model = User
