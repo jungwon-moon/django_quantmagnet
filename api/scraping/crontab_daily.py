@@ -64,7 +64,7 @@ def holiday():
             requests.post(slack_url, headers=headers, data=txt)
 
 
-def valiation():
+def valuation():
     # 실행일과 거래일이 일치하는지 확인
     if utils.check_trading_day(today):
         try:
@@ -86,12 +86,12 @@ def valiation():
                 values.append(value)
             db.multiInsertDB('valuation', values)
 
-            txt = f'Valiation | Success'
+            txt = f'valuation | Success'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Valiation | * Failed * : {e}'
+            txt = f'valuation | * Failed * : {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
