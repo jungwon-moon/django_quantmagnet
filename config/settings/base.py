@@ -121,9 +121,9 @@ DATABASE_ROUTER = [
 
 CRONJOBS = [
     ### 분 시 일 월 요일
-    # 휴장일 데이터
+    # 휴장일
     ("0 8 * * 1-5", "api.scraping.crontab_daily.holiday"),
-    # 주가 데이터 수집
+    # 주가
     ("0 16 * * 1-5", "api.scraping.crontab_daily.stock_price"),
     # 밸류에이션
     ("0 16 * * 1-5", "api.scraping.crontab_daily.valuation"),
