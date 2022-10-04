@@ -2,6 +2,7 @@ import json
 import requests
 from pathlib import Path
 from datetime import datetime, timedelta
+import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
 
@@ -181,9 +182,52 @@ def category_keywords(time):
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def disparity(date):
+    """
+    이격도(disparity) 함수입니다.
+    
+        Args:
+            date(str): 분석 시작일 `20220101`
+    """
+    start = utils.dt2str(utils.str2dt(date) - timedelta(days=90))
+    data = {}
+    try:
+        db = postgres_connect(pgdb_properties)
+        rows = db.readDB(table='stock_price',
+                            columns='*',
+                            where=f"date between '{start}' and '{date}'",
+                            orderby='stcd, date')
+        for row in rows:
+            if data.get(row[1]):
+                data[row[1]].append(row)
+            else:
+                data[row[1]] = [row]
+
+        for _, v in data.items():
+            df = pd.DataFrame(v)
+            ma10 = df[8].rolling(window=10).mean()
+            dp10 = ma10 / df[8]
+            ma20 = df[8].rolling(window=20).mean()
+            dp20 = ma20 / df[8]
+            ma60 = df[8].rolling(window=50).mean()
+            dp60 = ma60 / df[8]
+            df.insert(len(df.columns), 'ma10', ma10)
+            df.insert(len(df.columns), 'dp10', dp10)
+            df.insert(len(df.columns), 'ma20', ma20)
+            df.insert(len(df.columns), 'dp20', dp20)
+            df.insert(len(df.columns), 'ma60', ma60)
+            df.insert(len(df.columns), 'dp60', dp60)
+        print(df)
+
+    except Exception as e:
+        print(e)
+
+
+disparity(date)
+
 ### Run
 # holiday_restore('2022')
-dates = date_range('20220601', '20220628')
+# dates = date_range('20220601', '20220628')
 # stock_price_restore(dates)
-valuation_restore(dates)
+# valuation_restore(dates)
 # category_keywords(time)

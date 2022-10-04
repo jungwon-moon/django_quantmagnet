@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     'api.apps.ApiConfig',
     'account.apps.AccountConfig',
+    'schedule.apps.ScheduleConfig',
 ]
 
 MIDDLEWARE = [
@@ -122,13 +123,13 @@ DATABASE_ROUTER = [
 CRONJOBS = [
     ### 분 시 일 월 요일
     # 휴장일
-    ("0 8 * * 1-5", "api.scraping.crontab_daily.holiday"),
+    ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday"),
     # 주가
-    ("0 16 * * 1-5", "api.scraping.crontab_daily.stock_price"),
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.stock_price"),
     # 밸류에이션
-    ("0 16 * * 1-5", "api.scraping.crontab_daily.valuation"),
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation"),
     # categoryKeywords
-    ("5 */3 * * *", "api.scraping.crontab_hourly.category_keywords"),
+    ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords"),
 ]
 
 # Password validation
