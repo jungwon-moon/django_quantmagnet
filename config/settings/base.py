@@ -124,8 +124,8 @@ CRONJOBS = [
     ### 분 시 일 월 요일
     # 휴장일
     ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday"),
-    # 주가
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.stock_price"),
+    # 주가 -> 이격도
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.run_flows"),
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation"),
     # categoryKeywords

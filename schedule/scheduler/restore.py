@@ -90,14 +90,17 @@ def stock_price_restore(*dates):
                                 replace_zero(stock['MKTCAP'])
                             )
                         values.append(value)
-                db.multiInsertDB('stock_price', values)
 
-        txt = f'Restore | Stock_price | Success'
+                run = db.multiInsertDB('stock_price', values)
+                if run[0] == False:
+                    raise Exception(run[1])
+
+        txt = f'Stock_price\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore | Stock_price | {date} * Failed * : {e}'
+        txt = f'Stock_price\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -123,14 +126,17 @@ def valuation_restore(*dates):
                         calc_roe(stock['EPS'], stock['BPS'])   # ROE
                     )
                     values.append(value)
-                db.multiInsertDB('valuation', values)
 
-        txt = f'Restore | Valiation | Success '
+                run = db.multiInsertDB('valuation', values)
+                if run[0] == False:
+                    raise Exception(run[1])
+
+        txt = f'Valiation\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore | Valiation | {date} * Failed * : {e}'
+        txt = f'Valiation\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -144,19 +150,22 @@ def holiday_restore(yy=None):
             date = ''.join(row['calnd_dd'].split('-'))
             value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
             values.append(value)
-        db.multiInsertDB('holiday', values)
 
-        txt = f'Restore | Holiday | Success: {yy}'
+        run = db.multiInsertDB('holiday', values)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'Holiday\n실행: RESTORE\n복원일: {yy}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Restore | Holiday | * Failed * : {e}'
+        txt = f'Holiday\n실행: RESTORE\n복원일: {yy}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
 
-def category_keywords(time):
+def category_keywords_restore(time):
     try:
         data = scraping.get_category_keywords()['categoryKeyword']
         db = postgres_connect(pgdb_properties)
@@ -171,63 +180,83 @@ def category_keywords(time):
                 row['NAMED_ENTITY_COUNT'],
             )
             values.append(value)
-        db.multiInsertDB('category_keywords', values)
-        txt = f'category_keyword | Success'
+
+        run = db.multiInsertDB('category_keywords', values)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'Category_keyword\n실행: RESTORE\n복원일: {time}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'category_keyword | * Failed * : {e}'
+        txt = f'Category_keyword\n실행: RESTORE\n복원일: {time}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
 
-def disparity(date):
+def disparity_restore(date):
     """
-    이격도(disparity) 함수입니다.
-    
+    이격도(disparity) 함수입니다.\n
+    stock_price가 수집되는 16시 이후 최신 데이터를 계산할 수 있습니다.\n
         Args:
-            date(str): 분석 시작일 `20220101`
+            date(str): 분석 기준일 `20220101`
     """
-    start = utils.dt2str(utils.str2dt(date) - timedelta(days=90))
+    start = utils.dt2str(utils.str2dt(date) - timedelta(days=100))
     data = {}
     try:
         db = postgres_connect(pgdb_properties)
+        values = []
         rows = db.readDB(table='stock_price',
-                            columns='*',
-                            where=f"date between '{start}' and '{date}'",
-                            orderby='stcd, date')
+                         columns='*',
+                         where=f"date between '{start}' and '{date}'",
+                         orderby='stcd, date')
+        ### data 데이터 생성
+        # '000020': [[date1, ..., ...], [date2, ..., ...], ...]
+        # '000040': [[date1, ..., ...], [date2, ..., ...], ...]
+        # ...
         for row in rows:
             if data.get(row[1]):
                 data[row[1]].append(row)
             else:
                 data[row[1]] = [row]
-
+        
         for _, v in data.items():
+            # _: '000020', ...
+            # v: [[date1, ..., ...], [date2, ..., ...], ...]
             df = pd.DataFrame(v)
-            ma10 = df[8].rolling(window=10).mean()
-            dp10 = ma10 / df[8]
-            ma20 = df[8].rolling(window=20).mean()
-            dp20 = ma20 / df[8]
-            ma60 = df[8].rolling(window=50).mean()
-            dp60 = ma60 / df[8]
-            df.insert(len(df.columns), 'ma10', ma10)
-            df.insert(len(df.columns), 'dp10', dp10)
-            df.insert(len(df.columns), 'ma20', ma20)
-            df.insert(len(df.columns), 'dp20', dp20)
-            df.insert(len(df.columns), 'ma60', ma60)
-            df.insert(len(df.columns), 'dp60', dp60)
-        print(df)
+            df.columns = ['date', 'stcd', 'market', 'rate', 'prevd',
+                          'open', 'high', 'low', 'close', 'volume', 'values', 'capital']
+            df['ma10'] = df['close'].rolling(10).mean().round(1)
+            df['ma20'] = df['close'].rolling(20).mean().round(1)
+            df['ma60'] = df['close'].rolling(60).mean().round(1)
+            df['dp10'] = ((df['close'] / df['ma10']) * 100).round(1)
+            df['dp20'] = ((df['close'] / df['ma20']) * 100).round(1)
+            df['dp60'] = ((df['close'] / df['ma60']) * 100).round(1)
+            value = tuple(
+                df.iloc[[-1], [0, 1, 12, 13, 14, 15, 16, 17]].values.tolist()[0])
+            if date == value[0]:
+                values.append(value)
+
+        run = db.multiInsertDB('disparity', values)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'disparity\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        print(e)
+        txt = f'disparity\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
-
-disparity(date)
 
 ### Run
 # holiday_restore('2022')
 # dates = date_range('20220601', '20220628')
+# dates = ['20221005']
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
+# disparity(date)

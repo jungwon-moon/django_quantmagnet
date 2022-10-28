@@ -1,7 +1,8 @@
 import json
 import requests
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
 
@@ -42,7 +43,6 @@ def calc_roe(eps, bps):
 
 ### functions
 def holiday():
-
     # 실행일과 거래일이 일치하는지 확인
     if utils.check_trading_day(today):
         try:
@@ -54,12 +54,12 @@ def holiday():
                 value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
                 db.upsertDB('holiday', value, 'calnd_dd')
 
-            txt = f'Holiday | Success'
+            txt = f'Holiday\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Holiday | * Failed * : {e}'
+            txt = f'Holiday\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -86,12 +86,12 @@ def valuation():
                 values.append(value)
             db.multiInsertDB('valuation', values)
 
-            txt = f'valuation | Success'
+            txt = f'Valuation\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'valuation | * Failed * : {e}'
+            txt = f'Valuation\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -136,11 +136,70 @@ def stock_price():
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
-            txt = f'Stock_price | Success'
+            txt = f'Stock_price\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Stock_price | * Failed * : {e}'
+            txt = f'Stock_price\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
+    else:
+        return False
+
+
+def disparity():
+    start = utils.dt2str(utils.str2dt(today) - timedelta(days=100))
+    data = {}
+    try:
+        db = postgres_connect(pgdb_properties)
+        values = []
+        rows = db.readDB(table='stock_price',
+                         columns='*',
+                         where=f"date between '{start}' and '{today}'",
+                         orderby='stcd, date')
+        ### data 데이터 생성
+        # '000020': [[date1, ..., ...], [date2, ..., ...], ...]
+        # '000040': [[date1, ..., ...], [date2, ..., ...], ...]
+        # ...
+        for row in rows:
+            if data.get(row[1]):
+                data[row[1]].append(row)
+            else:
+                data[row[1]] = [row]
+
+        for _, v in data.items():
+            # _: '000020', ...
+            # v: [[date1, ..., ...], [date2, ..., ...], ...]
+            df = pd.DataFrame(v)
+            df.columns = ['date', 'stcd', 'market', 'rate', 'prevd',
+                          'open', 'high', 'low', 'close', 'volume', 'values', 'capital']
+            df['ma10'] = df['close'].rolling(10).mean().round(1)
+            df['ma20'] = df['close'].rolling(20).mean().round(1)
+            df['ma60'] = df['close'].rolling(60).mean().round(1)
+            df['dp10'] = ((df['close'] / df['ma10']) * 100).round(1)
+            df['dp20'] = ((df['close'] / df['ma20']) * 100).round(1)
+            df['dp60'] = ((df['close'] / df['ma60']) * 100).round(1)
+            value = tuple(
+                df.iloc[[-1], [0, 1, 12, 13, 14, 15, 16, 17]].values.tolist()[0])
+            if today == value[0]:
+                values.append(value)
+
+        run = db.multiInsertDB('disparity', values)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'Disparity\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'Disparity\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+
+def run_flows():
+    # stock_price -> disparity
+    if stock_price() != False:
+        disparity()
