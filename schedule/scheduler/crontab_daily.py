@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
+from db_query import *
 
 
 headers = {
@@ -199,7 +200,18 @@ def disparity():
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def update_stock_code():
+    query_model = Update_stock_code()
+    query_model.date = today
+    query_model.update_code()
+
+
 def run_flows():
     # stock_price -> disparity
     if stock_price() != False:
+        update_stock_code()
         disparity()
+
+
+def calculate_yields():
+    pass
