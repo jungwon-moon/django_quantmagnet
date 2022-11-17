@@ -1,3 +1,6 @@
+import sys
+sys.path.append('schedule/scheduler')
+
 import json
 import requests
 from pathlib import Path
@@ -5,7 +8,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
-from DB_Models.db_query import *
+from db_query import *
 
 
 headers = {
