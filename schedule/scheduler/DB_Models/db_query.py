@@ -5,7 +5,7 @@ from qm import scraping, utils
 
 
 class Connect_DB():
-	SECRET_PATH = Path(__file__).resolve().parent.parent.parent
+	SECRET_PATH = Path(__file__).resolve().parent.parent.parent.parent
 	SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 	secrets = json.loads(open(SECRET_FILE).read())
 

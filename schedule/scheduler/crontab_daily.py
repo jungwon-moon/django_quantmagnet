@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
-from db_query import *
+from DB_Models.db_query import *
 
 
 headers = {
@@ -207,7 +207,9 @@ def update_stock_code():
 
 
 def run_flows():
-    # stock_price -> disparity
+    # 주가 정보 수집(stock_price) -> 
+    # 종목 코드 업데이트(update_stock_code) -> 
+    # 이격도 계산(disparity)
     if stock_price() != False:
         update_stock_code()
         disparity()
