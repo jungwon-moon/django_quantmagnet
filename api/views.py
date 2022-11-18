@@ -48,7 +48,7 @@ class ValuationList(generics.ListAPIView):
         'dvd_yld': ['gte', 'lte'],
     }
     ordering_fields = ['date']
-    ordering = ['date']
+    ordering = ['-date']
 
 
 # 주가 조회
@@ -71,7 +71,7 @@ class StockPriceList(generics.ListAPIView):
         'stcd': ['contains'],
     }
     ordering_fields = ['date']
-    ordering = ['date']
+    ordering = ['-date']
 
 
 # 종목 검색
@@ -103,4 +103,4 @@ class CategoryKeywordsList(generics.ListAPIView):
         'category_code': ['contains']
     }
     ordering_fields = ['date']
-    ordering = ['date']
+    ordering = ['-date']
