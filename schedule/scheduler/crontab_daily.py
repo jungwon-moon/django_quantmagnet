@@ -1,6 +1,5 @@
 import sys
-sys.path.append('schedule/scheduler')
-
+sys.path.append('./schedule/scheduler')
 import json
 import requests
 from pathlib import Path
@@ -219,4 +218,6 @@ def run_flows():
 
 
 def calculate_yields():
-    pass
+    txt = f'Test\n실행: Test\n실행일: {today}\n상태: SUCCESS'
+    txt = json.dumps({"text": txt})
+    requests.post(slack_url, headers=headers, data=txt)
