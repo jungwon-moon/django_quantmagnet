@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 from pathlib import Path
@@ -123,13 +124,17 @@ DATABASE_ROUTER = [
 CRONJOBS = [
     ### 분 시 일 월 요일
     # 휴장일
-    ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday"),
+    ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_dayily.log')),
     # 주가 > 종목코드 > 이격도
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.run_flows"),
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.run_flows",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_dayily.log')),
     # 밸류에이션
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation"),
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_dayily.log')),
     # categoryKeywords
-    ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords"),
+    ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_hourly.log')),
 ]
 
 # Password validation
