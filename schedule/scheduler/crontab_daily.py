@@ -1,5 +1,7 @@
+import os
 import sys
-sys.path.append('./schedule/scheduler')
+sys.path.append(os.path.join(sys.path[0], 'schedule/scheduler'))
+
 import json
 import requests
 from pathlib import Path
@@ -27,7 +29,6 @@ for key, value in secrets.items():
         slack_url = value
 
 today = utils.dt2str(datetime.today())
-time = utils.dt2str(datetime.today(), 'time')
 
 
 def replace_zero(text):
@@ -48,7 +49,6 @@ def calc_roe(eps, bps):
 ### functions
 def holiday():
     # 실행일과 거래일이 일치하는지 확인
-    print(f'{time} holiday run')
     if utils.check_trading_day(today):
         try:
             data = scraping.get_holiday()
@@ -71,7 +71,6 @@ def holiday():
 
 def valuation():
     # 실행일과 거래일이 일치하는지 확인
-    print(f'{time} valuation run')
     if utils.check_trading_day(today):
         try:
             data = scraping.get_valuation(today)
@@ -104,7 +103,6 @@ def valuation():
 
 def stock_price():
     # 실행일과 거래일이 일치하는지 확인
-    print(f'{time} stock_price run')
     if utils.check_trading_day(today):
         try:
             data = scraping.get_all_stock_price(today)
@@ -156,7 +154,6 @@ def stock_price():
 
 
 def disparity():
-    print(f'{time} disparity run')
     start = utils.dt2str(utils.str2dt(today) - timedelta(days=100))
     data = {}
     try:
@@ -208,14 +205,12 @@ def disparity():
 
 
 def update_stock_code():
-    print(f'{time} update_stock_code run')
     query_model = Update_stock_code()
     query_model.date = today
     query_model.update_code()
 
 
 def run_flows():
-    print(f'{time} run_flows run')
     # 주가 정보 수집(stock_price) -> 
     # 종목 코드 업데이트(update_stock_code) -> 
     # 이격도 계산(disparity)
@@ -225,7 +220,6 @@ def run_flows():
 
 
 def calculate_yields():
-    print(f'{time} calculate_yields run')
     txt = f'Test\n실행: Test\n실행일: {today}\n상태: SUCCESS'
     txt = json.dumps({"text": txt})
-    requests.post(slack_url, headers=headers, data=txt)
+    # requests.post(slack_url, headers=headers, data=txt)

@@ -27,7 +27,6 @@ time = utils.dt2str(datetime.today(), 'time')
 
 
 def category_keywords():
-    print(f'{time} | category_keywords')
     try:
         data = scraping.get_category_keywords()['categoryKeyword']
         db = postgres_connect(pgdb_properties)

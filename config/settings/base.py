@@ -135,6 +135,9 @@ CRONJOBS = [
     # categoryKeywords
     ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_hourly.log' + ' 2>&1 ')),
+    # calculate_yields
+    # ("* * * * *", "schedule.scheduler.crontab_daily.calculate_yields",
+    #  '>> ' + os.path.join(BASE_DIR, 'config/log/cron_dayily.log' + ' 2>&1 ')),
 ]
 
 # Password validation
