@@ -1,7 +1,3 @@
-import os
-import sys
-sys.path.append(os.path.join(sys.path[0], 'schedule/scheduler'))
-
 import json
 import requests
 from pathlib import Path
@@ -9,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
-from db_query import *
+from qm.db.query.crontab_daily_query import *
 
 
 headers = {
@@ -220,6 +216,7 @@ def run_flows():
 
 
 def calculate_yields():
+    print('실행')
     txt = f'Test\n실행: Test\n실행일: {today}\n상태: SUCCESS'
     txt = json.dumps({"text": txt})
     # requests.post(slack_url, headers=headers, data=txt)
