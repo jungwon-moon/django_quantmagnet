@@ -123,6 +123,9 @@ DATABASE_ROUTER = [
 
 CRONJOBS = [
     ### 분 시 일 월 요일
+    # 한국 기준금리
+    ("0 9 * * *", "schedule.scheduler.crontab_daily.kr_base_rate_restore",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
     # 휴장일
     ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),

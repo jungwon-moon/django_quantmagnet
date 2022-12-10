@@ -65,6 +65,23 @@ def holiday():
             requests.post(slack_url, headers=headers, data=txt)
 
 
+def kr_base_rate_restore():
+    try:
+        values = scraping.get_kr_base_rate()
+        db = postgres_connect(pgdb_properties)
+        for value in values:
+            db.upsertDB('kr_base_rate', tuple(value), 'date')
+
+        txt = f'Base_rate\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'Base_rate\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+
 def valuation():
     # 실행일과 거래일이 일치하는지 확인
     if utils.check_trading_day(today):
