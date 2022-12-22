@@ -38,7 +38,7 @@ def strategy_per_buy(day):
   new_df = pd.DataFrame(columns=['date', 'stcd', 'close', 'balance'])
   balance = model.current_balance()
   if balance is None:
-    balance = 1000
+    balance = 100
 
   for stcd in stcds:
     tmp = df.loc[df['stcd'] == stcd[0]][['date', 'stcd', 'close']]

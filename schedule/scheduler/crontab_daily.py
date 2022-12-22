@@ -231,9 +231,3 @@ def run_flows():
         update_stock_code()
         disparity()
 
-
-def calculate_yields():
-    print('실행')
-    txt = f'Test\n실행: Test\n실행일: {today}\n상태: SUCCESS'
-    txt = json.dumps({"text": txt})
-    # requests.post(slack_url, headers=headers, data=txt)

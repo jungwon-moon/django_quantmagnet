@@ -1,14 +1,20 @@
 import json
 import requests
+import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
-import pandas as pd
+from dateutil.relativedelta import relativedelta
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
+from qm.db.query.strategy_query import *
+from qm.db.query.crontab_daily_query import *
+from qm.db.query.simple_backtesting_query import *
 
 
 headers = {
-    "Content-type": "application/json"
+	"Content-type": "application/json"
 }
 
 SECRET_PATH = Path(__file__).resolve().parent.parent.parent
@@ -16,53 +22,55 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    ### postgresql connect
-    if key == 'lightsail_db':
-        pgdb_properties = value
-    ### slack webhook connect
-    if key == 'slack_scraping':
-        slack_url = value
+	### postgresql connect
+	if key == 'lightsail_db':
+		pgdb_properties = value
+	### slack webhook connect
+	if key == 'slack_scraping':
+		slack_url = value
 
+db = postgres_connect(pgdb_properties)
 time = utils.dt2str(datetime.today(), 'time')
 date = utils.dt2str(datetime.today())
 
 
 ### Utils function
 def replace_zero(text):
-    text = text.replace(',', '')
-    if text == '-':
-        return None
-    return text
+	text = text.replace(',', '')
+	if text == '-':
+		return None
+	return text
 
 
 def calc_roe(eps, bps):
-    eps = replace_zero(eps)
-    bps = replace_zero(bps)
-    if eps == None or bps == None:
-        return None
-    return str(round(float(eps) / float(bps) * 100, 2))
+	eps = replace_zero(eps)
+	bps = replace_zero(bps)
+	if eps == None or bps == None:
+		return None
+	return str(round(float(eps) / float(bps) * 100, 2))
 
 
 def date_range(start, end):
-    start = datetime.strptime(start, "%Y%m%d")
-    end = datetime.strptime(end, "%Y%m%d")
-    dates = [(start + timedelta(days=i)).strftime("%Y%m%d")
-             for i in range((end-start).days+1)]
-    return dates
+	start = datetime.strptime(start, "%Y%m%d")
+	end = datetime.strptime(end, "%Y%m%d")
+	dates = [(start + timedelta(days=i)).strftime("%Y%m%d")
+          for i in range((end-start).days+1)]
+	return dates
 
 
 ### Main function
 def stock_price_restore(*dates):
     try:
+        # db = postgres_connect(pgdb_properties)
         for date in dates[0]:
             # 실행일과 거래일이 일치하는지 확인
             if utils.check_trading_day(date):
                 data = scraping.get_all_stock_price(date)
-                db = postgres_connect(pgdb_properties)
+
                 values = []
                 for stock in data:
                     if stock['MKT_NM'] != 'KONEX':
-                        # 거래량이 0일때 시,고,저가 데이터를 종가로 변경
+			# 거래량이 0일때 시,고,저가 데이터를 종가로 변경
                         if stock['ACC_TRDVOL'] == '0':
                             value = (
                                 date, stock['ISU_SRT_CD'], stock['MKT_NM'],
@@ -74,33 +82,30 @@ def stock_price_restore(*dates):
                                 replace_zero(stock['TDD_CLSPRC']),
                                 replace_zero(stock['ACC_TRDVOL']),
                                 replace_zero(stock['ACC_TRDVAL']),
-                                replace_zero(stock['MKTCAP'])
-                            )
+                                replace_zero(stock['MKTCAP']))
                         else:
                             value = (
                                 date, stock['ISU_SRT_CD'], stock['MKT_NM'],
                                 replace_zero(stock['FLUC_RT']),  # 등락률
-                                replace_zero(stock['CMPPREVDD_PRC']),  # 대비
+                                replace_zero(stock['CMPPREVDD_PRC']),
                                 replace_zero(stock['TDD_OPNPRC']),
                                 replace_zero(stock['TDD_HGPRC']),
                                 replace_zero(stock['TDD_LWPRC']),
                                 replace_zero(stock['TDD_CLSPRC']),
                                 replace_zero(stock['ACC_TRDVOL']),
                                 replace_zero(stock['ACC_TRDVAL']),
-                                replace_zero(stock['MKTCAP'])
-                            )
+                                replace_zero(stock['MKTCAP']))
                         values.append(value)
-
                 run = db.multiInsertDB('stock_price', values)
                 if run[0] == False:
                     raise Exception(run[1])
 
-        txt = f'Stock_price\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
+        txt = f'Stock_price\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Stock_price\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = f'Stock_price\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -108,10 +113,11 @@ def stock_price_restore(*dates):
 def valuation_restore(*dates):
     try:
         for date in dates[0]:
+            pass
             # 실행일과 거래일이 일치하는지 확인
             if utils.check_trading_day(date):
                 data = scraping.get_valuation(date)
-                db = postgres_connect(pgdb_properties)
+                # db = postgres_connect(pgdb_properties)
                 values = []
                 for stock in data:
                     value = (
@@ -131,12 +137,12 @@ def valuation_restore(*dates):
                 if run[0] == False:
                     raise Exception(run[1])
 
-        txt = f'Valiation\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
+        txt = f'Valiation\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: SUCCESS'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Valiation\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = f'Valiation\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: ※ FAILURE ※\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -144,7 +150,7 @@ def valuation_restore(*dates):
 def holiday_restore(yy=None):
     try:
         data = scraping.get_holiday(yy)
-        db = postgres_connect(pgdb_properties)
+        # db = postgres_connect(pgdb_properties)
         values = []
         for row in data:
             date = ''.join(row['calnd_dd'].split('-'))
@@ -165,10 +171,27 @@ def holiday_restore(yy=None):
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def kr_base_rate_restore():
+    try:
+        values = scraping.get_kr_base_rate()
+        # db = postgres_connect(pgdb_properties)
+        for value in values:
+            db.upsertDB('kr_base_rate', tuple(value), 'date')
+
+        txt = f'Base_rate\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'Base_rate\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+
 def category_keywords_restore(time):
     try:
         data = scraping.get_category_keywords()['categoryKeyword']
-        db = postgres_connect(pgdb_properties)
+        # db = postgres_connect(pgdb_properties)
         values = []
         for row in data:
             value = (
@@ -205,7 +228,7 @@ def disparity_restore(date):
     start = utils.dt2str(utils.str2dt(date) - timedelta(days=100))
     data = {}
     try:
-        db = postgres_connect(pgdb_properties)
+        # db = postgres_connect(pgdb_properties)
         values = []
         rows = db.readDB(table='stock_price',
                          columns='*',
@@ -220,7 +243,7 @@ def disparity_restore(date):
                 data[row[1]].append(row)
             else:
                 data[row[1]] = [row]
-        
+
         for _, v in data.items():
             # _: '000020', ...
             # v: [[date1, ..., ...], [date2, ..., ...], ...]
@@ -252,11 +275,167 @@ def disparity_restore(date):
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def simple_yields_PER(date):
+    if utils.check_trading_day(date):
+        try:
+            query_model = Simple_backtesting_PER()
+            query_model.start = utils.dt2str(
+                utils.str2dt(date) - relativedelta(months=12))
+            query_model.end = date
+            # query_model.limit = 1
+            columns = ['date', 'stcd', 'market', 'close', 'volume']
+            stcd = query_model.select_stock_code()
+            print(len(stcd))
+            query_model.select_stock_code()
+            df = pd.DataFrame(
+                query_model.stock_price(), columns=columns)
+            # df['balance'] = df['stcd']
+            # new_df = pd.DataFrame(columns=['date', 'stcd', 'close', '전고점', 'DD'])
+            new_df = pd.DataFrame(columns=['date', 'stcd', 'close', 'balance'])
+            for cd in stcd:
+                tmp = df.loc[df['stcd'] == cd[0]][['date', 'stcd', 'close']]
+                buy_price = tmp.iloc[0, 2]
+                balance = 100
+                tmp['balance'] = (
+                    1 + (tmp['close'] - buy_price) / buy_price) * balance
+                # tmp['전고점'] = tmp['balance'].cummax()
+                # tmp['DD'] = (1 - tmp['balance'] / tmp['전고점']) * 100
+                new_df = pd.concat([new_df, tmp], ignore_index=True)
+            group_date_df = new_df[['date', 'balance']
+                                   ].groupby(['date']).mean()
+            group_date_df['전고점'] = group_date_df['balance'].cummax()
+            print(group_date_df)
+            print(query_model.start)
+
+        except Exception as e:
+            print(e)
+
+
+def restore_update_stock_code():
+    query_model = Update_stock_code()
+    query_model.date = date
+    query_model.update_code()
+
+
+### 투자 전략 수익률 계산
+def restore_strategy_return():
+    if utils.check_trading_day(date):
+        restore_strategy_per_return()
+
+
+def restore_strategy_per_return():
+    model = Per_return()
+    # 누적 수익률(cumulative return)
+    df= pd.DataFrame(model.stdev())
+    print(df.std())
+
+    # periods = [3, 6, 12]
+    # period = 6
+    # query_model.start = utils.dt2str(utils.str2dt(date) - relativedelta(months=period))
+    # query_model.set_view()
+    # print(query_model.show_view())
+    # # period_price = query_model.period_price()
+    # # print(len(period_price))
+    # balance = query_model.get_balance()
+    # print(balance)
+
+
+# restore_strategy_per_return()
+
+
+def strategy_per_buy(day):
+    # 파라미터 설정
+    model = Strategy_per()
+    model.start = day
+    model.set_view()
+    # 종목 산출
+    stcds = model.select_stocks()
+
+    df = pd.DataFrame(model.stock_price(), columns=[
+        'date', 'stcd', 'market', 'close'])
+    new_df = pd.DataFrame(columns=['date', 'stcd', 'close', 'balance'])
+
+    # 종목별 balance 계산
+    balance = model.current_balance()
+    if balance is None:
+        balance = 100
+
+    for stcd in stcds:
+        tmp = df.loc[df['stcd'] == stcd[0]][['date', 'stcd', 'close']]
+        tmp['balance'] = balance
+        new_df = pd.concat([new_df, tmp], ignore_index=True)
+
+    # DB 저장
+    # date, stcd, balance, bid, limit, per_gte, per_lte, new_position
+    values = new_df[['date', 'stcd', 'balance', 'close']].values.tolist()
+    values = [tuple(value + [model.limit, model.per_gte, model.per_lte, 't'])
+              for value in values]
+    model.db.multiInsertDB('strategy_per', values)
+
+
+def restore_strategy_per_begin():
+    trading_day = '20180101'
+    strategy_per_buy(trading_day)
+
+
+def restore_strategy_per(tdate):
+    model = Strategy_per()
+    # 최근 계산일
+    current_date = model.current_date()
+    # DB 데이터 확인
+    if current_date is None:
+        restore_strategy_per_begin()
+        current_date = model.current_position_date()
+    # 포지션 매수일
+    current_position_date = model.current_position_date()
+    # 포지션 매도일
+    end_position_date = utils.dt2str(utils.str2dt(
+    	current_position_date) + relativedelta(months=3))
+    # # 리밸런싱 기준일
+    next_rebalancing_date = utils.dt2str(
+    	utils.str2dt(end_position_date) + relativedelta(days=1))
+
+    # 실행일이 DB 마지막 데이터보다 이후면? -> 최근데이터 갱신
+    if tdate > current_date:
+        # 마지막 데이터가 포지션 만료일보다 이전이면? 데이터 갱신
+        if current_date < end_position_date:
+            model.start = current_date
+            model.end = end_position_date
+            price_df = pd.DataFrame(model.period_stock_price(), columns=[
+                'date', 'stcd', 'close'])
+            save_df = pd.DataFrame(
+            	columns=['date', 'stcd', 'close', 'balance'])
+            position_info = model.position_info()
+            for stcd, bid, balance in position_info:
+                row = price_df.loc[price_df['stcd']
+                                   == stcd][['date', 'stcd', 'close']]
+                tmp_df = row[['date', 'stcd', 'close']]
+                tmp_df['bid'] = bid
+                tmp_df['balance'] = (1+((tmp_df['close']-bid)/bid)) * balance
+                # tmp_df[1:] -> current_date 제거
+                save_df = pd.concat([save_df, tmp_df[1:]])
+            values = save_df[['date', 'stcd',
+                              'balance', 'bid']].values.tolist()
+            values = [tuple(value + [model.limit, model.per_gte, model.per_lte, 'f'])
+                      for value in values]
+            model.db.multiInsertDB('strategy_per', values)
+
+        # 리밸런싱 조건
+        if next_rebalancing_date <= tdate:
+            strategy_per_buy(next_rebalancing_date)
+
+    # if tdate
 ### Run
-# holiday_restore('2022')
-# dates = date_range('20220601', '20220628')
-# dates = ['20221005']
+# dates = [date]
+# dates = ['20221121']
+# simple_yields_PER('20220302')
+# simple_yields_PER('20221202')
+# restore_update_stock_code(date)
+# holiday_restore('2018')
+# dates = date_range('20200101', '20201231')
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
-# disparity(date)
+# disparity_restore(date)
+# restore_strategy_per_begin()
+# restore_strategy_per('20221212')
