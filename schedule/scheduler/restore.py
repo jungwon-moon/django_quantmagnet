@@ -298,8 +298,6 @@ def simple_yields_PER(date):
                 balance = 100
                 tmp['balance'] = (
                     1 + (tmp['close'] - buy_price) / buy_price) * balance
-                # tmp['전고점'] = tmp['balance'].cummax()
-                # tmp['DD'] = (1 - tmp['balance'] / tmp['전고점']) * 100
                 new_df = pd.concat([new_df, tmp], ignore_index=True)
             group_date_df = new_df[['date', 'balance']
                                    ].groupby(['date']).mean()
@@ -317,38 +315,30 @@ def restore_update_stock_code():
     query_model.update_code()
 
 
-# 투자 전략 수익률 계산
-def restore_strategy_return():
+def restore_strategy_per_return(date):
     if utils.check_trading_day(date):
-        restore_strategy_per_return()
-
-
-def restore_strategy_per_return():
-    model = Per_return()
-    # 누적 수익률(cumulative return)
-    name = 'valuation_per'
-    ret_3m = ''
-    ret_6m = ''
-    ret_1y = ''
-    ret_an = ''
-    mdd = ''
-    ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
-    values = (name, date, ret_3m, ret_6m, ret_1y,
-              ret_an, ret_cum, mdd, stddev, cagr, sharp)
-    print(values)
-
-    # periods = [3, 6, 12]
-    # period = 6
-    # query_model.start = utils.dt2str(utils.str2dt(date) - relativedelta(months=period))
-    # query_model.set_view()
-    # print(query_model.show_view())
-    # # period_price = query_model.period_price()
-    # # print(len(period_price))
-    # balance = query_model.get_balance()
-    # print(balance)
-
-
-restore_strategy_per_return()
+        try:
+            model = Per_return()
+            model.date = date
+            name = 'valuation_per'
+            ret_3m, ret_6m, ret_1y, ret_an = model.returns()
+            ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
+            df = pd.DataFrame(model.daily_balance(), columns=['date', 'balance'])
+            df['mb'] = df['balance'].cummax()
+            df['mdd'] = 1 - df['balance'] / df['mb']
+            mdd = df.iloc[-1]['mdd']
+            values = (name, date, ret_3m, ret_6m, ret_1y,
+                    ret_an, ret_cum, mdd, stddev, cagr, sharp)
+            model.db.insertDB('valuation_returns', values)
+            
+            txt = f'strategy_per_return\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+        
+        except Exception as e:
+            txt = f'strategy_per_return\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
 
 
 def strategy_per_buy(day):
@@ -419,7 +409,8 @@ def restore_strategy_per(tdate):
                                    == stcd][['date', 'stcd', 'close']]
                 tmp_df = row[['date', 'stcd', 'close']]
                 tmp_df['price'] = price
-                tmp_df['balance'] = (1+((tmp_df['close']-price)/price)) * balance
+                tmp_df['balance'] = (
+                    1+((tmp_df['close']-price)/price)) * balance
                 # tmp_df[1:] -> current_date 제거
                 save_df = pd.concat([save_df, tmp_df[1:]])
             values = save_df[['date', 'stcd',
@@ -432,7 +423,7 @@ def restore_strategy_per(tdate):
         if next_rebalancing_date <= tdate:
             strategy_per_buy(next_rebalancing_date)
 
-    # if tdate
+
 # Run
 # dates = [date]
 # dates = ['20221121']
@@ -445,5 +436,5 @@ def restore_strategy_per(tdate):
 # valuation_restore(dates)
 # category_keywords(time)
 # disparity_restore(date)
-# restore_strategy_per_begin()
 # restore_strategy_per('20221212')
+# restore_strategy_per_return('20221222')

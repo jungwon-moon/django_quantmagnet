@@ -142,8 +142,10 @@ CRONJOBS = [
     ("5 16 * * 1-5", "schedule.scheduler.strategy_per.strategy_per_crontab",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
     
-    ### strategy 수익률
+    ### valuation 수익률
     # 16:05 이후 수행해야함
+    ("10 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation_returns",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
     
     # categoryKeywords
     ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords",

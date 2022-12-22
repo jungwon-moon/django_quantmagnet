@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from qm.db.connect import postgres_connect
 from qm import scraping, utils
+from qm.db.query.strategy_query import *
 from qm.db.query.crontab_daily_query import *
 
 
@@ -17,10 +18,10 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-    ### postgresql connect
+    # postgresql connect
     if key == 'lightsail_db':
         pgdb_properties = value
-    ### slack webhook connect
+    # slack webhook connect
     if key == 'slack_scraping':
         slack_url = value
 
@@ -42,7 +43,7 @@ def calc_roe(eps, bps):
     return str(round(float(eps) / float(bps) * 100, 2))
 
 
-### functions
+# functions
 def holiday():
     # 실행일과 거래일이 일치하는지 확인
     if utils.check_trading_day(today):
@@ -176,7 +177,7 @@ def disparity():
                          columns='*',
                          where=f"date between '{start}' and '{today}'",
                          orderby='stcd, date')
-        ### data 데이터 생성
+        # data 데이터 생성
         # '000020': [[date1, ..., ...], [date2, ..., ...], ...]
         # '000040': [[date1, ..., ...], [date2, ..., ...], ...]
         # ...
@@ -224,10 +225,40 @@ def update_stock_code():
 
 
 def run_flows():
-    # 주가 정보 수집(stock_price) -> 
-    # 종목 코드 업데이트(update_stock_code) -> 
+    # 주가 정보 수집(stock_price) ->
+    # 종목 코드 업데이트(update_stock_code) ->
     # 이격도 계산(disparity)
     if stock_price() != False:
         update_stock_code()
         disparity()
 
+
+def strategy_per_return():
+    if utils.check_trading_day(today):
+        try:
+            model = Per_return()
+            model.date = today
+            name = 'valuation_per'
+            ret_3m, ret_6m, ret_1y, ret_an = model.returns()
+            ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
+            df = pd.DataFrame(model.daily_balance(),
+                              columns=['date', 'balance'])
+            df['mb'] = df['balance'].cummax()
+            df['mdd'] = 1 - df['balance'] / df['mb']
+            mdd = df.iloc[-1]['mdd']
+            values = (name, today, ret_3m, ret_6m, ret_1y,
+                      ret_an, ret_cum, mdd, stddev, cagr, sharp)
+            model.db.insertDB('valuation_returns', values)
+
+            txt = f'strategy_per_return\n실행: SCHEDULER\n복원일: {today}\n상태: SUCCESS'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+        except Exception as e:
+            txt = f'strategy_per_return\n실행: SCHEDULER\n복원일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+
+def valuation_returns():
+    strategy_per_return()
