@@ -22,10 +22,10 @@ SECRET_FILE = SECRET_PATH / 'config/.config_secret/db.json'
 secrets = json.loads(open(SECRET_FILE).read())
 
 for key, value in secrets.items():
-	### postgresql connect
+	# postgresql connect
 	if key == 'lightsail_db':
 		pgdb_properties = value
-	### slack webhook connect
+	# slack webhook connect
 	if key == 'slack_scraping':
 		slack_url = value
 
@@ -34,7 +34,7 @@ time = utils.dt2str(datetime.today(), 'time')
 date = utils.dt2str(datetime.today())
 
 
-### Utils function
+# Utils function
 def replace_zero(text):
 	text = text.replace(',', '')
 	if text == '-':
@@ -58,7 +58,7 @@ def date_range(start, end):
 	return dates
 
 
-### Main function
+# Main function
 def stock_price_restore(*dates):
     try:
         # db = postgres_connect(pgdb_properties)
@@ -234,7 +234,7 @@ def disparity_restore(date):
                          columns='*',
                          where=f"date between '{start}' and '{date}'",
                          orderby='stcd, date')
-        ### data 데이터 생성
+        # data 데이터 생성
         # '000020': [[date1, ..., ...], [date2, ..., ...], ...]
         # '000040': [[date1, ..., ...], [date2, ..., ...], ...]
         # ...
@@ -317,7 +317,7 @@ def restore_update_stock_code():
     query_model.update_code()
 
 
-### 투자 전략 수익률 계산
+# 투자 전략 수익률 계산
 def restore_strategy_return():
     if utils.check_trading_day(date):
         restore_strategy_per_return()
@@ -326,8 +326,16 @@ def restore_strategy_return():
 def restore_strategy_per_return():
     model = Per_return()
     # 누적 수익률(cumulative return)
-    df= pd.DataFrame(model.stdev())
-    print(df.std())
+    name = 'valuation_per'
+    ret_3m = ''
+    ret_6m = ''
+    ret_1y = ''
+    ret_an = ''
+    mdd = ''
+    ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
+    values = (name, date, ret_3m, ret_6m, ret_1y,
+              ret_an, ret_cum, mdd, stddev, cagr, sharp)
+    print(values)
 
     # periods = [3, 6, 12]
     # period = 6
@@ -340,7 +348,7 @@ def restore_strategy_per_return():
     # print(balance)
 
 
-# restore_strategy_per_return()
+restore_strategy_per_return()
 
 
 def strategy_per_buy(day):
@@ -366,7 +374,7 @@ def strategy_per_buy(day):
         new_df = pd.concat([new_df, tmp], ignore_index=True)
 
     # DB 저장
-    # date, stcd, balance, bid, limit, per_gte, per_lte, new_position
+    # date, stcd, balance, price, limit, per_gte, per_lte, new_position
     values = new_df[['date', 'stcd', 'balance', 'close']].values.tolist()
     values = [tuple(value + [model.limit, model.per_gte, model.per_lte, 't'])
               for value in values]
@@ -406,16 +414,16 @@ def restore_strategy_per(tdate):
             save_df = pd.DataFrame(
             	columns=['date', 'stcd', 'close', 'balance'])
             position_info = model.position_info()
-            for stcd, bid, balance in position_info:
+            for stcd, price, balance in position_info:
                 row = price_df.loc[price_df['stcd']
                                    == stcd][['date', 'stcd', 'close']]
                 tmp_df = row[['date', 'stcd', 'close']]
-                tmp_df['bid'] = bid
-                tmp_df['balance'] = (1+((tmp_df['close']-bid)/bid)) * balance
+                tmp_df['price'] = price
+                tmp_df['balance'] = (1+((tmp_df['close']-price)/price)) * balance
                 # tmp_df[1:] -> current_date 제거
                 save_df = pd.concat([save_df, tmp_df[1:]])
             values = save_df[['date', 'stcd',
-                              'balance', 'bid']].values.tolist()
+                              'balance', 'price']].values.tolist()
             values = [tuple(value + [model.limit, model.per_gte, model.per_lte, 'f'])
                       for value in values]
             model.db.multiInsertDB('strategy_per', values)
@@ -425,7 +433,7 @@ def restore_strategy_per(tdate):
             strategy_per_buy(next_rebalancing_date)
 
     # if tdate
-### Run
+# Run
 # dates = [date]
 # dates = ['20221121']
 # simple_yields_PER('20220302')
