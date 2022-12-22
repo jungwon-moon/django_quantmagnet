@@ -71,15 +71,15 @@ def strategy_per_crontab():
           save_df = pd.DataFrame(
               columns=['date', 'stcd', 'close', 'balance'])
           position_info = model.position_info()
-          for stcd, bid, balance in position_info:
+          for stcd, price, balance in position_info:
             row = price_df.loc[price_df['stcd']
                                 == stcd][['date', 'stcd', 'close']]
             tmp_df = row[['date', 'stcd', 'close']]
-            tmp_df['bid'] = bid
-            tmp_df['balance'] = (1+((tmp_df['close']-bid)/bid)) * balance
+            tmp_df['price'] = price
+            tmp_df['balance'] = (1+((tmp_df['close']-price)/price)) * balance
             save_df = pd.concat([save_df, tmp_df[1:]])
           values = save_df[['date', 'stcd',
-                            'balance', 'bid']].values.tolist()
+                            'balance', 'price']].values.tolist()
           values = [tuple(value + [model.limit, model.per_gte, model.per_lte, 'f'])
                     for value in values]
           model.db.multiInsertDB('strategy_per', values)
