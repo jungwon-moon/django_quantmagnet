@@ -239,15 +239,16 @@ def strategy_per_return():
             model = Per_return()
             model.date = today
             name = 'valuation_per'
-            ret_3m, ret_6m, ret_1y, ret_an = model.returns()
-            ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
+            ret_3m, ret_6m, ret_1y, \
+                ret_an, ret_cum, period = model.returns()
+            stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
             df = pd.DataFrame(model.daily_balance(),
                               columns=['date', 'balance'])
             df['mb'] = df['balance'].cummax()
             df['mdd'] = 1 - df['balance'] / df['mb']
             mdd = df.iloc[-1]['mdd']
             values = (name, today, ret_3m, ret_6m, ret_1y,
-                      ret_an, ret_cum, mdd, stddev, cagr, sharp)
+                      ret_an, ret_cum, mdd, stddev, cagr, sharp, period)
             model.db.insertDB('valuation_returns', values)
 
             txt = f'strategy_per_return\n실행: SCHEDULER\n복원일: {today}\n상태: SUCCESS'

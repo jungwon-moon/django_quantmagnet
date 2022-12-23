@@ -113,7 +113,6 @@ def stock_price_restore(*dates):
 def valuation_restore(*dates):
     try:
         for date in dates[0]:
-            pass
             # 실행일과 거래일이 일치하는지 확인
             if utils.check_trading_day(date):
                 data = scraping.get_valuation(date)
@@ -150,7 +149,6 @@ def valuation_restore(*dates):
 def holiday_restore(yy=None):
     try:
         data = scraping.get_holiday(yy)
-        # db = postgres_connect(pgdb_properties)
         values = []
         for row in data:
             date = ''.join(row['calnd_dd'].split('-'))
@@ -174,7 +172,6 @@ def holiday_restore(yy=None):
 def kr_base_rate_restore():
     try:
         values = scraping.get_kr_base_rate()
-        # db = postgres_connect(pgdb_properties)
         for value in values:
             db.upsertDB('kr_base_rate', tuple(value), 'date')
 
@@ -191,7 +188,6 @@ def kr_base_rate_restore():
 def category_keywords_restore(time):
     try:
         data = scraping.get_category_keywords()['categoryKeyword']
-        # db = postgres_connect(pgdb_properties)
         values = []
         for row in data:
             value = (
@@ -315,30 +311,33 @@ def restore_update_stock_code():
     query_model.update_code()
 
 
-def restore_strategy_per_return(date):
-    if utils.check_trading_day(date):
-        try:
-            model = Per_return()
-            model.date = date
-            name = 'valuation_per'
-            ret_3m, ret_6m, ret_1y, ret_an = model.returns()
-            ret_cum, stddev, cagr, sharp = model.cumulative_stddev_cagr_sharp()
-            df = pd.DataFrame(model.daily_balance(), columns=['date', 'balance'])
-            df['mb'] = df['balance'].cummax()
-            df['mdd'] = 1 - df['balance'] / df['mb']
-            mdd = df.iloc[-1]['mdd']
-            values = (name, date, ret_3m, ret_6m, ret_1y,
-                    ret_an, ret_cum, mdd, stddev, cagr, sharp)
-            model.db.insertDB('valuation_returns', values)
-            
-            txt = f'strategy_per_return\n실행: RESTORE\n복원일: {date}\n상태: SUCCESS'
-            txt = json.dumps({"text": txt})
-            requests.post(slack_url, headers=headers, data=txt)
-        
-        except Exception as e:
-            txt = f'strategy_per_return\n실행: RESTORE\n복원일: {date}\n상태: ※ FAILURE ※\n에러: {e}'
-            txt = json.dumps({"text": txt})
-            requests.post(slack_url, headers=headers, data=txt)
+def restore_strategy_per_return(*dates):
+    try:
+        for date in dates[0]:
+            if utils.check_trading_day(date):
+                model = Per_return()
+                model.date = date
+                name = 'valuation_per'
+                ret_3m, ret_6m, ret_1y, \
+                    ret_an, ret_cum, period = model.returns()
+                stddev, cagr, sharp = model.stddev_cagr_sharp()
+                df = pd.DataFrame(model.daily_balance(),
+                                  columns=['date', 'balance'])
+                df['mb'] = df['balance'].cummax()
+                df['mdd'] = 1 - df['balance'] / df['mb']
+                mdd = df.iloc[-1]['mdd']
+                value = (name, date, ret_3m, ret_6m, ret_1y,
+                         ret_an, ret_cum, mdd, stddev, cagr, sharp, period)
+                model.db.insertDB('valuation_returns', value)
+
+        txt = f'strategy_per_return\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: SUCCESS'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'strategy_per_return\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
 
 
 def strategy_per_buy(day):
@@ -424,17 +423,17 @@ def restore_strategy_per(tdate):
             strategy_per_buy(next_rebalancing_date)
 
 
-# Run
+### Run
 # dates = [date]
 # dates = ['20221121']
 # simple_yields_PER('20220302')
 # simple_yields_PER('20221202')
 # restore_update_stock_code(date)
 # holiday_restore('2018')
-# dates = date_range('20200101', '20201231')
+dates = date_range('20190101', '20211231')
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
 # disparity_restore(date)
 # restore_strategy_per('20221212')
-# restore_strategy_per_return('20221222')
+# restore_strategy_per_return(dates)
