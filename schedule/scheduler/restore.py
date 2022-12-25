@@ -321,13 +321,10 @@ def restore_strategy_per_return(*dates):
                 ret_3m, ret_6m, ret_1y, \
                     ret_an, ret_cum, period = model.returns()
                 stddev, cagr, sharp = model.stddev_cagr_sharp()
-                df = pd.DataFrame(model.daily_balance(),
-                                  columns=['date', 'balance'])
-                df['mb'] = df['balance'].cummax()
-                df['mdd'] = 1 - df['balance'] / df['mb']
-                mdd = df.iloc[-1]['mdd']
+                mdd = model.mdd()
                 value = (name, date, ret_3m, ret_6m, ret_1y,
-                         ret_an, ret_cum, mdd, stddev, cagr, sharp, period)
+                         ret_an, ret_cum, stddev, mdd,
+                         cagr, sharp, period)
                 model.db.insertDB('valuation_returns', value)
 
         txt = f'strategy_per_return\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n상태: SUCCESS'
@@ -425,12 +422,13 @@ def restore_strategy_per(tdate):
 
 ### Run
 # dates = [date]
-# dates = ['20221121']
+# dates = ['20210702']
 # simple_yields_PER('20220302')
 # simple_yields_PER('20221202')
 # restore_update_stock_code(date)
 # holiday_restore('2018')
-dates = date_range('20190101', '20211231')
+# dates = date_range('20190101', '20211231')
+# dates = date_range('20220101', '20231231')
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
