@@ -33,6 +33,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_api_key',
+    'drf_spectacular', # API Docs
+    'drf_spectacular_sidecar',
     'django_filters',
     'django_crontab',
     'knox',  # 토큰 인증
@@ -57,7 +59,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny',],
     'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
@@ -217,3 +220,14 @@ LOGOUT_REDIRECT_URL = '/'
 # 세션 타임 아웃
 SESSION_COOKIE_AGE = 1200  # 20분
 SESSION_SAVE_EVERY_REQUEST = True
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'QuantMagnet API',
+    'DESCRIPTION': 'TEST',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+}

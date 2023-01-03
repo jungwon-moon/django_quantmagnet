@@ -1,8 +1,14 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from api.models import *
 from api.serializers import *
+from django import db
+from django.db import connection 
+from django.db import transaction
+from django.utils.connection import ConnectionProxy
 
 
 # # STOCK
@@ -83,24 +89,42 @@ class SearchStockList(generics.ListAPIView):
     search_fields = ['^stcd', '^stnm']
 
 
-# 클라우드 워드 키워드 조회
-class CategoryKeywordsPagination(LimitOffsetPagination):
-    default_limit = 100
-    max_limit = 100
+class CategoryKeywordsList(APIView):
+    """
+    워드 클라우드
+    """
+    def get(self, request):
+        using = 'lightsail_db'
+        code = request.GET.get('code')
+        cur_date = CategoryKeywords.objects.using(using).raw('''
+            select date from category_keywords
+                order by date desc limit 1
+        ''')[0].date
+        query = CategoryKeywords.objects.using(
+            using).all().filter(date=cur_date, category_code=code).order_by('-date')
+        serializers = CategoryKeywordsSerializer(query, many=True)
+        return Response(serializers.data)
 
 
-class CategoryKeywordsList(generics.ListAPIView):
-    using = 'lightsail_db'
-    queryset = CategoryKeywords.objects.using(using).all()
-    serializer_class = CategoryKeywordsSerializer
-    pagination_class = CategoryKeywordsPagination
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = {
-        'date': ['contains'],
-        'category_code': ['contains']
-    }
-    ordering_fields = ['date']
-    ordering = ['-date']
+class ValuationReturnsList(APIView):
+    def get(self, request):
+        using = 'lightsail_db'
+        cur_date = ValuationReturns.objects.using(using).raw('''
+            select date from valuation_returns
+                order by date desc limit 1
+            ''')[0].date
+        query = ValuationReturns.objects.using(
+            using).all().filter(date=cur_date)
+        # data = [[row.date, row.name, row.return_3m, row.return_6m, row.return_1y] for row in query]
+        serializers = ValuationReturnsSerializer(query, many=True)
+        return Response(serializers.data)
+
+
+class ValuationReturnsDetailList(APIView):
+    def get(self, request):
+        name = request.GET.get('name')
+        using = 'lightsail_db'
+        query = ValuationReturns.objects.using(
+            using).all().filter(name=name).order_by('-date')
+        serializers = ValuationReturnsSerializer(query, many=True)
+        return Response(serializers.data)

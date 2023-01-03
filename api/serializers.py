@@ -27,3 +27,8 @@ class CategoryKeywordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CategoryKeywords
         fields = ['date', 'category_code', 'named_entity', 'named_entity_count']
+
+class ValuationReturnsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ValuationReturns
+        fields = '__all__'

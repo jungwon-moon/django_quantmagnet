@@ -75,3 +75,23 @@ class CategoryKeywords(models.Model):
         managed = False
         db_table = 'category_keywords'
         # unique_together = (('date', 'stcd'),)
+
+
+class ValuationReturns(models.Model):
+    name = models.TextField()
+    date = models.CharField(max_length=12, primary_key=True)
+    return_3m = models.FloatField()
+    return_6m = models.FloatField()
+    return_1y = models.FloatField()
+    annualized_HPR = models.FloatField()
+    cumulative_return = models.FloatField()
+    stddev = models.FloatField()
+    mdd = models.FloatField()
+    cagr = models.FloatField()
+    sharp_rate = models.FloatField()
+    period = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'valuation_returns'
+        # unique_together = (('name', 'date'),)

@@ -11,4 +11,7 @@ urlpatterns = [
     ###  ###
     path("searchstock/", SearchStockList.as_view(), name='searchstock'),
     path("categorykeywords/", CategoryKeywordsList.as_view(), name='categorykeywords'),
+    ###  ###
+    path("val-ret-li", ValuationReturnsList.as_view(), name='val-ret-li'),
+    path("val-ret-det", ValuationReturnsDetailList.as_view(), name='val-ret-det'),
 ]

@@ -428,7 +428,7 @@ def restore_strategy_per(tdate):
 # restore_update_stock_code(date)
 # holiday_restore('2018')
 # dates = date_range('20190101', '20211231')
-# dates = date_range('20220101', '20231231')
+# dates = date_range('20220101', '20221231')
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
