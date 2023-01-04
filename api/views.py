@@ -5,10 +5,6 @@ from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from api.models import *
 from api.serializers import *
-from django import db
-from django.db import connection 
-from django.db import transaction
-from django.utils.connection import ConnectionProxy
 
 
 # # STOCK
@@ -28,33 +24,39 @@ class HolidayList(generics.ListAPIView):
 
 
 # 밸류에이션
-class ValuationPagination(LimitOffsetPagination):
-    default_limit = 2500
-    max_limit = 2500
-
-
-class ValuationList(generics.ListAPIView):
-    using = 'lightsail_db'
-    queryset = Valuation.objects.using(using).all()
-    serializer_class = ValuationSerializer
-    pagination_class = ValuationPagination
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = {
-        'date': ['contains'],
-        'stcd': ['contains'],
-        'eps': ['gte', 'lte'],
-        'per': ['gte', 'lte'],
-        'bps': ['gte', 'lte'],
-        'pbr': ['gte', 'lte'],
-        'dps': ['gte', 'lte'],
-        'roe': ['gte', 'lte'],
-        'dvd_yld': ['gte', 'lte'],
-    }
-    ordering_fields = ['date']
-    ordering = ['-date']
+class ValuationList(APIView):
+    def get(self, request):
+        using = 'lightsail_db'
+        pbr__gte = request.GET.get('pbr__gte')
+        pbr__lte = request.GET.get('pbr__lte')
+        per__gte = request.GET.get('per__gte')
+        per__lte = request.GET.get('per__lte')
+        eps__gte = request.GET.get('eps__gte')
+        eps__lte = request.GET.get('eps__lte')
+        bps__gte = request.GET.get('bps__gte')
+        bps__lte = request.GET.get('bps__lte')
+        roe__gte = request.GET.get('roe__gte')
+        roe__lte = request.GET.get('roe__lte')
+        cur_date = Valuation.objects.using(using).raw('''
+            select date from valuation
+                order by date desc limit 1
+        ''')[0].date
+        query = Valuation.objects.using(
+            using).all().filter(
+                date=cur_date,
+                pbr__gte=pbr__gte,
+                pbr__lte=pbr__lte,
+                per__gte=per__gte,
+                per__lte=per__lte,
+                eps__gte=eps__gte,
+                eps__lte=eps__lte,
+                bps__gte=bps__gte,
+                bps__lte=bps__lte,
+                roe__gte=roe__gte,
+                roe__lte=roe__lte
+                )
+        serializers = ValuationSerializer(query, many=True)
+        return Response(serializers.data)
 
 
 # 주가 조회
