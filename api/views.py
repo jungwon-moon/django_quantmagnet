@@ -58,6 +58,22 @@ class ValuationList(APIView):
         serializers = ValuationSerializer(query, many=True)
         return Response(serializers.data)
 
+class ValuationDetail(APIView):
+    def get(self, request):
+        using = 'lightsail_db'
+        stcd__contains = request.GET.get('stcd__contains')
+        cur_date = Valuation.objects.using(using).raw('''
+            select date from valuation
+                order by date desc limit 1
+        ''')[0].date
+        query = Valuation.objects.using(
+            using).all().filter(
+                date=cur_date,
+                stcd__contains=stcd__contains
+            )
+        serializers = ValuationSerializer(query, many=True)
+        return Response(serializers.data)
+
 
 # 주가 조회
 class StockPricePagination(LimitOffsetPagination):
