@@ -33,8 +33,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_api_key',
-    'drf_spectacular', # API Docs
-    'drf_spectacular_sidecar',
+    'drf_yasg',
     'django_filters',
     'django_crontab',
     'knox',  # 토큰 인증
@@ -53,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -192,20 +192,19 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
 
 # manage.py collectstatic 실행시 저장되는 static 경로
+# STATIC_ROOT = BASE_DIR / "static"
 STATIC_ROOT = PARENT_DIR / "react_quantmagnet/public/static"
 
 # manage.py collectstatic 실행시 해당 경로 파일도 복사?
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -220,14 +219,3 @@ LOGOUT_REDIRECT_URL = '/'
 # 세션 타임 아웃
 SESSION_COOKIE_AGE = 1200  # 20분
 SESSION_SAVE_EVERY_REQUEST = True
-
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'QuantMagnet API',
-    'DESCRIPTION': 'TEST',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-
-    'SWAGGER_UI_DIST': 'SIDECAR',
-    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
-    'REDOC_DIST': 'SIDECAR',
-}
