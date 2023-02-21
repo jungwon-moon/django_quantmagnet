@@ -10,8 +10,8 @@ from api.serializers import *
 # # STOCK
 # 휴장일
 class HolidayPagination(LimitOffsetPagination):
-    default_limit = 100
-    max_limit = 100
+    default_limit = 1000
+    max_limit = 1000
 
 
 class HolidayList(generics.ListAPIView):
