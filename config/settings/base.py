@@ -138,7 +138,14 @@ CRONJOBS = [
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
-    
+    ## INDEX
+    # KOSPI
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.index_kospi",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    # KOSDAQ
+    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.index_kosdaq",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+
     ###
     # 16:00 이후 수행해야함
     # per 전략

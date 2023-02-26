@@ -110,6 +110,73 @@ def stock_price_restore(*dates):
         requests.post(slack_url, headers=headers, data=txt)
 
 
+def index_kospi_restore(*dates):
+    try:
+        values = []
+        for date in dates[0]:
+            if utils.check_trading_day(date):
+                data = scraping.get_kospi(date)
+                value = (
+                    date, '코스피', 'KOSPI',
+                    replace_zero(data['UPDN_RATE']),    # 등락률
+                    replace_zero(data['PRV_DD_CMPR']),  # 대비
+                    replace_zero(data['OPNPRC_IDX']),   # 시가
+                    replace_zero(data['HGPRC_IDX']),    # 고가
+                    replace_zero(data['LWPRC_IDX']),    # 저가
+                    replace_zero(data['CLSPRC_IDX']),   # 종가
+                    replace_zero(data['ACC_TRDVOL']),   # 거래량
+                    replace_zero(data['ACC_TRDVAL']),    # 거래대금
+                )
+                values.append(value)
+
+        run = db.multiInsertDB('index_', values)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'[SUCCESS] INDEX_KOSPI\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'[FAILURE] INDEX_KOSPI\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+
+def index_kosdaq_restore(*dates):
+    try:
+        values = []
+        for date in dates[0]:
+            if utils.check_trading_day(date):
+                data = scraping.get_kosdaq(date)
+                value = (
+                    date, '코스닥', 'KOSDAQ',
+                    replace_zero(data['UPDN_RATE']),    # 등락률
+                    replace_zero(data['PRV_DD_CMPR']),  # 대비
+                    replace_zero(data['OPNPRC_IDX']),   # 시가
+                    replace_zero(data['HGPRC_IDX']),    # 고가
+                    replace_zero(data['LWPRC_IDX']),    # 저가
+                    replace_zero(data['CLSPRC_IDX']),   # 종가
+                    replace_zero(data['ACC_TRDVOL']),   # 거래량
+                    replace_zero(data['ACC_TRDVAL']),    # 거래대금
+                )
+                values.append(value)
+
+        # run = db.multiInsertDB('index_', values)
+        run = db.insertDB('index_', value)
+        if run[0] == False:
+            raise Exception(run[1])
+
+        txt = f'[SUCCESS] INDEX_KOSDAQ\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+    except Exception as e:
+        txt = f'[FAILURE] INDEX_KOSDAQ\n실행: RESTORE\n복원일: {dates[0][0]} ~ {dates[0][-1]}\n에러: {e}'
+        txt = json.dumps({"text": txt})
+        requests.post(slack_url, headers=headers, data=txt)
+
+
 def valuation_restore(*dates):
     try:
         for date in dates[0]:
@@ -420,18 +487,21 @@ def restore_strategy_per(tdate):
             strategy_per_buy(next_rebalancing_date)
 
 
-### Run
+# Run
 # dates = [date]
-# dates = ['20210702']
+dates = ['20230224']
 # simple_yields_PER('20220302')
 # simple_yields_PER('20221202')
 # restore_update_stock_code(date)
 # holiday_restore('2018')
-# dates = date_range('20190101', '20211231')
-# dates = date_range('20220101', '20221231')
+# dates = date_range('20230201', '20230223')
+yy = '2022'
+# dates = date_range(yy + '0101', yy + '1231')
 # stock_price_restore(dates)
 # valuation_restore(dates)
 # category_keywords(time)
 # disparity_restore(date)
 # restore_strategy_per('20221212')
 # restore_strategy_per_return(dates)
+# index_kospi_restore(dates)
+index_kosdaq_restore(dates)

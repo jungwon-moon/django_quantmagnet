@@ -167,6 +167,64 @@ def stock_price():
         return False
 
 
+def index_kospi():
+    if utils.check_trading_day(today):
+        try:
+            data = scraping.get_kospi(today)
+            db = postgres_connect(pgdb_properties)
+            
+            value = (
+                today, '코스피', 'KOSPI',
+                replace_zero(data['UPDN_RATE']),    # 등락률
+                replace_zero(data['PRV_DD_CMPR']),  # 대비
+                replace_zero(data['OPNPRC_IDX']),   # 시가
+                replace_zero(data['HGPRC_IDX']),    # 고가
+                replace_zero(data['LWPRC_IDX']),    # 저가
+                replace_zero(data['CLSPRC_IDX']),   # 종가
+                replace_zero(data['ACC_TRDVOL']),   # 거래량
+                replace_zero(data['ACC_TRDVAL']),    # 거래대금
+            )
+            db.insertDB('index_', value)
+
+            txt = f'[SUCCESS] INDEX_KOSPI\n실행: SCHEDULER\n실행일: {today}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+        except Exception as e:
+            txt = f'[FAILURE] INDEX_KOSPI\n실행: SCHEDULER\n실행일: {today}\n에러: {e}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+
+def index_kosdaq():
+    if utils.check_trading_day(today):
+        try:
+            data = scraping.get_kospi(today)
+            db = postgres_connect(pgdb_properties)
+            
+            value = (
+                today, '코스닥', 'KOSDAQ',
+                replace_zero(data['UPDN_RATE']),    # 등락률
+                replace_zero(data['PRV_DD_CMPR']),  # 대비
+                replace_zero(data['OPNPRC_IDX']),   # 시가
+                replace_zero(data['HGPRC_IDX']),    # 고가
+                replace_zero(data['LWPRC_IDX']),    # 저가
+                replace_zero(data['CLSPRC_IDX']),   # 종가
+                replace_zero(data['ACC_TRDVOL']),   # 거래량
+                replace_zero(data['ACC_TRDVAL']),    # 거래대금
+            )
+            db.insertDB('index_', value)
+
+            txt = f'[SUCCESS] INDEX_KOSDAQ\n실행: SCHEDULER\n실행일: {today}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+        except Exception as e:
+            txt = f'[FAILURE] INDEX_KOSDAQ\n실행: SCHEDULER\n실행일: {today}\n에러: {e}'
+            txt = json.dumps({"text": txt})
+            requests.post(slack_url, headers=headers, data=txt)
+
+
 def disparity():
     start = utils.dt2str(utils.str2dt(today) - timedelta(days=100))
     data = {}
@@ -248,12 +306,12 @@ def strategy_per_return():
                       cagr, sharp, period)
             model.db.insertDB('valuation_returns', values)
 
-            txt = f'strategy_per_return\n실행: SCHEDULER\n복원일: {today}\n상태: SUCCESS'
+            txt = f'strategy_per_return\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'strategy_per_return\n실행: SCHEDULER\n복원일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = f'strategy_per_return\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
