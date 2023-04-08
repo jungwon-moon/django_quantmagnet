@@ -56,12 +56,12 @@ def holiday():
                 value = date, row['dy_tp_cd'], row['kr_dy_tp'], row['holdy_nm']
                 db.upsertDB('holiday', value, 'calnd_dd')
 
-            txt = f'Holiday\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+            txt = f'[SUCCESS] Holiday\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Holiday\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = f'[FAILURE] Holiday\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -73,12 +73,12 @@ def kr_base_rate_restore():
         for value in values:
             db.upsertDB('kr_base_rate', tuple(value), 'date')
 
-        txt = f'Base_rate\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+        txt = f'[SUCCESS] Base_rate\n실행: SCHEDULER'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Base_rate\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = f'[FAILURE] Base_rate\n실행: SCHEDULER\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -105,12 +105,12 @@ def valuation():
                 values.append(value)
             db.multiInsertDB('valuation', values)
 
-            txt = f'Valuation\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+            txt = f'[SUCCESS] Valuation\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Valuation\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = f'[FAILURE] Valuation\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -155,12 +155,12 @@ def stock_price():
                     values.append(value)
             db.multiInsertDB('stock_price', values)
 
-            txt = f'Stock_price\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+            txt = f'[SUCCESS] Stock_price\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'Stock_price\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = f'[FAILURE] Stock_price\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
     else:
@@ -172,7 +172,7 @@ def index_kospi():
         try:
             data = scraping.get_kospi(today)
             db = postgres_connect(pgdb_properties)
-            
+
             value = (
                 today, '코스피', 'KOSPI',
                 replace_zero(data['UPDN_RATE']),    # 등락률
@@ -186,12 +186,12 @@ def index_kospi():
             )
             db.insertDB('index_', value)
 
-            txt = f'[SUCCESS] INDEX_KOSPI\n실행: SCHEDULER\n실행일: {today}'
+            txt = f'[SUCCESS] INDEX_KOSPI\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'[FAILURE] INDEX_KOSPI\n실행: SCHEDULER\n실행일: {today}\n에러: {e}'
+            txt = f'[FAILURE] INDEX_KOSPI\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -201,7 +201,7 @@ def index_kosdaq():
         try:
             data = scraping.get_kospi(today)
             db = postgres_connect(pgdb_properties)
-            
+
             value = (
                 today, '코스닥', 'KOSDAQ',
                 replace_zero(data['UPDN_RATE']),    # 등락률
@@ -215,12 +215,12 @@ def index_kosdaq():
             )
             db.insertDB('index_', value)
 
-            txt = f'[SUCCESS] INDEX_KOSDAQ\n실행: SCHEDULER\n실행일: {today}'
+            txt = f'[SUCCESS] INDEX_KOSDAQ\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'[FAILURE] INDEX_KOSDAQ\n실행: SCHEDULER\n실행일: {today}\n에러: {e}'
+            txt = f'[FAILURE] INDEX_KOSDAQ\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
@@ -266,12 +266,12 @@ def disparity():
         if run[0] == False:
             raise Exception(run[1])
 
-        txt = f'Disparity\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+        txt = f'[SUCCESS] Disparity\n실행: SCHEDULER'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
     except Exception as e:
-        txt = f'Disparity\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+        txt = f'[SUCCESS] Disparity\n실행: SCHEDULER\n에러: {e}'
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
@@ -282,6 +282,7 @@ def update_stock_code():
     query_model.update_code()
 
 
+###
 def run_flows():
     # 주가 정보 수집(stock_price) ->
     # 종목 코드 업데이트(update_stock_code) ->
@@ -291,6 +292,7 @@ def run_flows():
         disparity()
 
 
+###
 def strategy_per_return():
     if utils.check_trading_day(today):
         try:
@@ -302,16 +304,16 @@ def strategy_per_return():
             stddev, cagr, sharp = model.stddev_cagr_sharp()
             mdd = model.mdd()
             values = (name, today, ret_3m, ret_6m, ret_1y,
-                      ret_an, ret_cum, stddev, mdd, 
+                      ret_an, ret_cum, stddev, mdd,
                       cagr, sharp, period)
             model.db.insertDB('valuation_returns', values)
 
-            txt = f'strategy_per_return\n실행: SCHEDULER\n실행일: {today}\n상태: SUCCESS'
+            txt = f'[SUCCESS] strategy_per_return\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 
         except Exception as e:
-            txt = f'strategy_per_return\n실행: SCHEDULER\n실행일: {today}\n상태: ※ FAILURE ※\n에러: {e}'
+            txt = f'[FAILURE] strategy_per_return\n실행: SCHEDULER\n에러: {e}'
             txt = json.dumps({"text": txt})
             requests.post(slack_url, headers=headers, data=txt)
 

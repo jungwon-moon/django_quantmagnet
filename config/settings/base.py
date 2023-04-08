@@ -125,7 +125,7 @@ DATABASE_ROUTER = [
 ]
 
 CRONJOBS = [
-    ### 분 시 일 월 요일
+    # 분 시 일 월 요일
     # 한국 기준금리
     ("0 9 * * *", "schedule.scheduler.crontab_daily.kr_base_rate_restore",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
@@ -138,7 +138,7 @@ CRONJOBS = [
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
-    ## INDEX
+    # INDEX
     # KOSPI
     ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.index_kospi",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
@@ -151,12 +151,12 @@ CRONJOBS = [
     # per 전략
     ("5 16 * * 1-5", "schedule.scheduler.strategy_per.strategy_per_crontab",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
-    
-    ### valuation 수익률
+
+    # valuation 수익률
     # 16:05 이후 수행해야함
     ("10 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation_returns",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
-    
+
     # categoryKeywords
     ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords",
      '>> ' + os.path.join(BASE_DIR, 'config/log/cron_hourly.log' + ' 2>&1 ')),
@@ -210,7 +210,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
