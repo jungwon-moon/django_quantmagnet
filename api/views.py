@@ -24,39 +24,31 @@ class HolidayList(generics.ListAPIView):
 
 
 # 밸류에이션
-class ValuationList(APIView):
-    def get(self, request):
-        using = 'lightsail_db'
-        pbr__gte = request.GET.get('pbr__gte')
-        pbr__lte = request.GET.get('pbr__lte')
-        per__gte = request.GET.get('per__gte')
-        per__lte = request.GET.get('per__lte')
-        eps__gte = request.GET.get('eps__gte')
-        eps__lte = request.GET.get('eps__lte')
-        bps__gte = request.GET.get('bps__gte')
-        bps__lte = request.GET.get('bps__lte')
-        roe__gte = request.GET.get('roe__gte')
-        roe__lte = request.GET.get('roe__lte')
-        cur_date = Valuation.objects.using(using).raw('''
-            select date from valuation
-                order by date desc limit 1
-        ''')[0].date
-        query = Valuation.objects.using(
-            using).all().filter(
-                date=cur_date,
-                pbr__gte=pbr__gte,
-                pbr__lte=pbr__lte,
-                per__gte=per__gte,
-                per__lte=per__lte,
-                eps__gte=eps__gte,
-                eps__lte=eps__lte,
-                bps__gte=bps__gte,
-                bps__lte=bps__lte,
-                roe__gte=roe__gte,
-                roe__lte=roe__lte
-                )
-        serializers = ValuationSerializer(query, many=True)
-        return Response(serializers.data)
+class ValuationPagination(LimitOffsetPagination):
+    default_limit = 3000
+    max_limit = 5000
+
+
+class ValuationList(generics.ListAPIView):
+    using = "lightsail_db"
+    cur_date = Valuation.objects.using(using).raw(
+        "select max(date) as date from valuation")[0].date
+    queryset = Valuation.objects.using(using).all().filter(
+        date=cur_date)
+    serializer_class = ValuationSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    filterset_fields = {
+        "pbr": ["gte", "lte"],
+        "per": ["gte", "lte"],
+        "eps": ["gte", "lte"],
+        "bps": ["gte", "lte"],
+        "roe": ["gte", "lte"],
+    }
+    pagination_class = ValuationPagination
+
 
 class ValuationDetail(APIView):
     def get(self, request):
@@ -70,7 +62,7 @@ class ValuationDetail(APIView):
             using).all().filter(
                 date=cur_date,
                 stcd__contains=stcd__contains
-            )
+        )
         serializers = ValuationSerializer(query, many=True)
         return Response(serializers.data)
 
@@ -111,6 +103,7 @@ class CategoryKeywordsList(APIView):
     """
     워드 클라우드
     """
+
     def get(self, request):
         using = 'lightsail_db'
         code = request.GET.get('code')
