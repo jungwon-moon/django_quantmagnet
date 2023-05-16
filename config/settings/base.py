@@ -40,7 +40,6 @@ INSTALLED_APPS = [
 
     'api.apps.ApiConfig',
     'account.apps.AccountConfig',
-    'schedule.apps.ScheduleConfig',
 ]
 
 MIDDLEWARE = [
@@ -163,6 +162,7 @@ CRONJOBS = [
     # calculate_yields
     # ("* * * * *", "schedule.scheduler.crontab_daily.calculate_yields",
     #  '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("1 1 1 1 1", "schedule.scheduler._Test.run"),
 ]
 
 # Password validation
