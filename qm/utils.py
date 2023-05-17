@@ -10,6 +10,8 @@ def dt2str(td: datetime.datetime, Type: str = "day") -> str:
     """
     if Type == "day":
         return ''.join(filter(str.isalnum, str(td)))[:8]
+    if Type == "time":
+        return ''.join(filter(str.isalnum, str(td)))[:12]
 
 
 def str2dt(td: str) -> datetime.datetime:
@@ -17,6 +19,25 @@ def str2dt(td: str) -> datetime.datetime:
     str -> datetime
     """
     return datetime.datetime.strptime(td, "%Y%m%d")
+
+
+_today = dt2str(datetime.datetime.today())
+_time = dt2str(datetime.datetime.today())
+
+
+def replace_zero(txt: str):
+    txt = txt.replace(",", "")
+    if txt == "-":
+        return None
+    return txt
+
+
+def calc_roe(eps, bps):
+    eps = replace_zero(eps)
+    bps = replace_zero(bps)
+    if eps == None or bps == None:
+        return None
+    return str(round(float(eps) / float(bps) * 100, 2))
 
 
 def check_trading_day(td: str, db=None) -> bool:
@@ -32,7 +53,7 @@ def check_trading_day(td: str, db=None) -> bool:
 
     # 휴장일 확인
     # API로 확인
-    if db == "API":
+    if db == None:
         req_url = "https://quantmag.net/api/kr/holiday"
         response = requests.get(req_url).json()["results"]
         holiday = [row["calnd_dd"] for row in response]
@@ -44,5 +65,5 @@ def check_trading_day(td: str, db=None) -> bool:
         holiday = [k[0] for k in db.readDB("holiday", "calnd_dd")]
         if td in holiday:
             return False
-            
+
     return True
