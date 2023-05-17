@@ -40,7 +40,6 @@ INSTALLED_APPS = [
 
     'api.apps.ApiConfig',
     'account.apps.AccountConfig',
-    'schedule.apps.ScheduleConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,39 +126,40 @@ DATABASE_ROUTER = [
 CRONJOBS = [
     # 분 시 일 월 요일
     # 한국 기준금리
-    ("0 9 * * *", "schedule.scheduler.crontab_daily.kr_base_rate_restore",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("0 9 * * *", "schedule.scheduler.kr_base_rate.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/kr_base_rate.log' + ' 2>&1 ')),
     # 휴장일
-    ("0 8 * * 1-5", "schedule.scheduler.crontab_daily.holiday",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("0 8 * * 1-5", "schedule.scheduler.holiday.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/holiday.log' + ' 2>&1 ')),
     # 주가 > 종목코드 > 이격도
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.run_flows",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("0 16 * * 1-5", "schedule.scheduler.pipeline_daily.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/pipeline_daily.log' + ' 2>&1 ')),
     # 밸류에이션
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
-    # INDEX
+    ("0 16 * * 1-5", "schedule.scheduler.valuation.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/valuation.log' + ' 2>&1 ')),
+    
+    ### INDEX
     # KOSPI
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.index_kospi",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("0 16 * * 1-5", "schedule.scheduler.index.kospi",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/index.log' + ' 2>&1 ')),
     # KOSDAQ
-    ("0 16 * * 1-5", "schedule.scheduler.crontab_daily.index_kosdaq",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    ("0 16 * * 1-5", "schedule.scheduler.index.kosdaq",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/index.log' + ' 2>&1 ')),
 
     ###
     # 16:00 이후 수행해야함
     # per 전략
-    ("5 16 * * 1-5", "schedule.scheduler.strategy_per.strategy_per_crontab",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    # ("5 16 * * 1-5", "schedule.scheduler.strategy_per.strategy_per_crontab",
+    #  '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
 
     # valuation 수익률
     # 16:05 이후 수행해야함
-    ("10 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation_returns",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
+    # ("10 16 * * 1-5", "schedule.scheduler.crontab_daily.valuation_returns",
+    #  '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
 
     # categoryKeywords
-    ("5 */3 * * *", "schedule.scheduler.crontab_hourly.category_keywords",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/cron_hourly.log' + ' 2>&1 ')),
+    ("5 */3 * * *", "schedule.scheduler.category_keywords.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/category_keywords.log' + ' 2>&1 ')),
     # calculate_yields
     # ("* * * * *", "schedule.scheduler.crontab_daily.calculate_yields",
     #  '>> ' + os.path.join(BASE_DIR, 'config/log/cron_daily.log' + ' 2>&1 ')),
