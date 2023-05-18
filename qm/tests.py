@@ -103,3 +103,13 @@ class ScrapingTests(TestCase):
     def test_category_keywords(self):
         result = scraping.category_keywords()
         self.assertNotEqual(len(result), 0)
+
+    def test_get_industry_classfication(self):
+        result = web_data_krx.get_industry_classification(indIdx=1)
+        self.assertEqual(result.status_code, 200)
+        result = web_data_krx.get_industry_classification(indIdx=2)
+        self.assertEqual(result.status_code, 200)
+
+    def test_industry_classification(self):
+        result = scraping.industry_classification(indIdx=1)
+        self.assertNotEqual(len(result), 0)

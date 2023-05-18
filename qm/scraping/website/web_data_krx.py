@@ -26,6 +26,7 @@ def get_valuation(dt=None):
 
 
 def get_stock_price(dt=None):
+
     if dt == None:
         dt = utils._today
 
@@ -52,6 +53,7 @@ def get_stock_index(indIdx="1", dt=None):
     strtDd : 특정일
     endDd : 특정일
     '''
+
     if dt == None:
         dt = utils._today
 
@@ -68,6 +70,33 @@ def get_stock_index(indIdx="1", dt=None):
         'share': '1',
         'money': '1',
         'csvxls_isNo': 'false',
+    }
+    r = requests.get(req_url, params=params, headers=headers)
+    return r
+
+
+def get_industry_classification(indIdx=1, dt=None):
+    """
+    기본 통계-주식-세부안내-업종분류 현황 
+    indIdx : 1=kospi, 2=kosdaq
+    """
+
+    if dt == None:
+        dt = utils._today
+
+    market = {1: "STK", 2: "KSQ"}
+
+    headers["Referer"] = "http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201"
+    headers["Origin"] = "http://data.krx.co.kr"
+    req_url = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
+    params = {
+        "bld": "dbms/MDC/STAT/standard/MDCSTAT03901",
+        "locale": "ko_KR",
+        "mktId": market[indIdx],
+        "segTpCd": "ALL",
+        "trdDd": dt,
+        "money": "1",
+        "csvxls_isNo": "false"
     }
     r = requests.get(req_url, params=params, headers=headers)
     return r
