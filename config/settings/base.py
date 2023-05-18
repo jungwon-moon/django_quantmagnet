@@ -131,14 +131,17 @@ CRONJOBS = [
     # 휴장일
     ("0 8 * * 1-5", "schedule.scheduler.holiday.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/holiday.log' + ' 2>&1 ')),
+    # 업종분류 현황
+    ("0 7 * * 1-5", "schedule.scheduler.industry_classification.run",
+     ">> " + os.path.join(BASE_DIR, "config/log/industry.log" + " 2>&1 ")),
     # 주가 > 종목코드 > 이격도
     ("0 16 * * 1-5", "schedule.scheduler.pipeline_daily.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/pipeline_daily.log' + ' 2>&1 ')),
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.valuation.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/valuation.log' + ' 2>&1 ')),
-    
-    ### INDEX
+
+    # INDEX
     # KOSPI
     ("0 16 * * 1-5", "schedule.scheduler.index.kospi",
      '>> ' + os.path.join(BASE_DIR, 'config/log/index.log' + ' 2>&1 ')),

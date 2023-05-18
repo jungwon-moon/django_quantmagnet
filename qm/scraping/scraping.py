@@ -27,3 +27,7 @@ def kosdaq(dt=None):
 
 def category_keywords():
     return web_bigkind.get_category_keywords().json()['categoryKeyword']
+
+
+def industry_classification(indIdx, dt=None):
+    return web_data_krx.get_industry_classification(indIdx=indIdx, dt=dt).json()['block1']
