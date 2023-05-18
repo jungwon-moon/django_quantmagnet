@@ -84,7 +84,6 @@ python-dateutil==2.8.2
 python3-openid==3.2.0
 pytz==2021.3
 PyYAML==6.0
-qm @ git+https://github.com/jungwon-moon/qm@9367516771edc3d4144d83b2f070001d2259a149
 requests==2.27.1
 requests-file==1.5.1
 requests-oauthlib==1.3.1
@@ -119,4 +118,5 @@ wrapt==1.14.1
 wsproto==1.2.0
 xlrd==2.0.1
 xyzservices==2022.9.0
+yapf==0.33.0
 zope.interface==5.5.1
