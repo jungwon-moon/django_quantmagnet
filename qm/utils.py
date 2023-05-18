@@ -21,8 +21,8 @@ def str2dt(td: str) -> datetime.datetime:
     return datetime.datetime.strptime(td, "%Y%m%d")
 
 
-_today = dt2str(datetime.datetime.today())
-_time = dt2str(datetime.datetime.today())
+_today = dt2str(datetime.datetime.today(), Type="day")
+_time = dt2str(datetime.datetime.today(), Type="time")
 
 
 def replace_zero(txt: str):
