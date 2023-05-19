@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 import requests
 import pandas as pd
@@ -112,8 +113,6 @@ def disparity():
         txt = json.dumps({"text": txt})
         requests.post(slack_url, headers=headers, data=txt)
 
-import os
-from pathlib import Path
 
 def update_stock_list():
     """
@@ -129,7 +128,7 @@ def update_stock_list():
         file_path = "store/json/stockList.json"
         base_path = Path(__file__).resolve().parent.parent.parent
         path = base_path / file_path
-        
+
         with open(path, 'w', encoding='UTF-8') as file:
             json.dump(data, file, indent="\t", ensure_ascii=False)
 
@@ -145,8 +144,8 @@ def update_stock_list():
 
 def run():
     # 주가 정보(stock_price)
-    # if stock_price() is not False:
+    if stock_price() is not False:
         # 종목 코드 업데이트
-    update_stock_list()
+        update_stock_list()
         # 이격도(disparity)
-        # disparity()   
+        disparity()
