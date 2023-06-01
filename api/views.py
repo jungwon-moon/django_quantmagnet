@@ -31,8 +31,9 @@ class ValuationPagination(LimitOffsetPagination):
 
 class ValuationList(generics.ListAPIView):
     using = "lightsail_db"
-    cur_date = Valuation.objects.using(using).raw(
-        "select max(date) as date from valuation")[0].date
+    cur_date = Valuation.objects.using(using).raw('''
+        select max(date) as date from valuation
+    ''')[0].date
     queryset = Valuation.objects.using(using).all().filter(
         date=cur_date)
     serializer_class = ValuationSerializer
@@ -54,9 +55,9 @@ class ValuationDetail(APIView):
     def get(self, request):
         using = 'lightsail_db'
         stcd__contains = request.GET.get('stcd__contains')
-        cur_date = Valuation.objects.using(using).raw('''
-            select date from valuation
-                order by date desc limit 1
+        cur_date = Valuation.objects.using(using).raw(f'''
+            select max(date) as date from valuation 
+            where stcd like '{stcd__contains}'
         ''')[0].date
         query = Valuation.objects.using(
             using).all().filter(
@@ -108,8 +109,7 @@ class CategoryKeywordsList(APIView):
         using = 'lightsail_db'
         code = request.GET.get('code')
         cur_date = CategoryKeywords.objects.using(using).raw('''
-            select date from category_keywords
-                order by date desc limit 1
+            select max(date) as date from category_keywords
         ''')[0].date
         query = CategoryKeywords.objects.using(
             using).all().filter(date=cur_date, category_code=code).order_by('-date')
@@ -121,8 +121,7 @@ class ValuationReturnsList(APIView):
     def get(self, request):
         using = 'lightsail_db'
         cur_date = ValuationReturns.objects.using(using).raw('''
-            select date from valuation_returns
-                order by date desc limit 1
+            select max(date) as date from valuation_returns
             ''')[0].date
         query = ValuationReturns.objects.using(
             using).all().filter(date=cur_date)
