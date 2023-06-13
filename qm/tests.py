@@ -1,6 +1,6 @@
 from django.test import TestCase
 from qm import utils, scraping
-from qm.scraping import web_bigkind, web_data_krx, web_bok, web_krx
+from qm.scraping import web_bigkind, web_data_krx, web_bok, web_krx, web_naver
 from datetime import datetime
 from qm.connect import postgres_connect
 
@@ -112,4 +112,12 @@ class ScrapingTests(TestCase):
 
     def test_industry_classification(self):
         result = scraping.industry_classification(indIdx=1)
+        self.assertNotEqual(len(result), 0)
+
+    def test_get_adjusted_stock_price(self):
+        result = web_naver.get_adjusted_stock_price("005930")
+        self.assertEqual(result.status_code, 200)
+
+    def test_adjusted_stock_price(self):
+        result = scraping.adjusted_stock_price("005930")
         self.assertNotEqual(len(result), 0)
