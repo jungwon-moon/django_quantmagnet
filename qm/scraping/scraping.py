@@ -1,4 +1,4 @@
-from qm.scraping.website import web_bigkind, web_data_krx, web_krx, web_bok
+from qm.scraping.website import web_bigkind, web_data_krx, web_krx, web_bok, web_naver
 
 
 def holiday(dt=None):
@@ -31,3 +31,10 @@ def category_keywords():
 
 def industry_classification(indIdx, dt=None):
     return web_data_krx.get_industry_classification(indIdx=indIdx, dt=dt).json()['block1']
+
+
+def adjusted_stock_price(stcd):
+    data = web_naver.get_adjusted_stock_price(stcd)
+    data = data.text.split(',\n\t\t\n')[1:-1]
+    data = list(map(eval, data))
+    return data
