@@ -140,7 +140,7 @@ CRONJOBS = [
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.valuation.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/valuation.log' + ' 2>&1 ')),
-    ("0 6 1, 15 * *", "schedule.scheduler.adjusted_stock_price.run",
+    ("0 6 1,15 * *", "schedule.scheduler.adjusted_stock_price.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/adjusted_stock_price.log' + ' 2>&1 ')),
 
     # INDEX
