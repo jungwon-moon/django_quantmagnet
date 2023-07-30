@@ -39,6 +39,7 @@ dnspython==2.2.1
 drf-spectacular==0.26.2
 drf-spectacular-sidecar==2023.5.1
 drf-yasg==1.21.5
+drf-yasg-examples==0.1.1
 et-xmlfile==1.1.0
 executing==0.8.3
 flex==6.14.1

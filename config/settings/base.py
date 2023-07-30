@@ -65,6 +65,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg_examples.SwaggerAutoSchema',
+}
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [

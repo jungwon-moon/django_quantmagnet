@@ -18,12 +18,13 @@ urlpatterns = [
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='QuantMagnet API Test',
+        title='QuantMagnet API',
         default_version='v1',
         description='''
-        설명
+        https://quantmag.net
+        웹 사이트에 사용되는 API를 작성한 문서입니다.
         ''',
-        terms_of_service='https://www.google.com/policies/terms/',
+        contact=openapi.Contact(email="quantmagnet@gmail.com")
     ),
     validators=['flex'],
     public=True,

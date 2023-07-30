@@ -22,6 +22,11 @@ class SearchStockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stocks
         fields = '__all__'
+        examples = {
+            "stnm": "종목명",
+            "stcd": "종목코드",
+            "market": "시장구분",
+        }
 
 class CategoryKeywordsSerializer(serializers.ModelSerializer):
     class Meta:
