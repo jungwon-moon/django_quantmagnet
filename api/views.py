@@ -1,26 +1,41 @@
+from api.models import *
+from api.serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
-from api.models import *
-from api.serializers import *
+from .pagination import PaginationHandlerMixin
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 # # STOCK
 # 휴장일
-class HolidayPagination(LimitOffsetPagination):
-    default_limit = 1000
-    max_limit = 1000
-
-
 class HolidayList(generics.ListAPIView):
+    """
+    휴장일 데이터
+    ---
+    조회연도의 휴장일을 조회
+    """
+
     using = 'lightsail_db'
     queryset = Holiday.objects.using(using).all()
     serializer_class = HolidaySerializer
     filter_backends = [filters.SearchFilter]
-    pagination_class = HolidayPagination
     search_fields = ['^calnd_dd']
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "search",
+                openapi.IN_QUERY,
+                description="조회연도",
+                type=openapi.TYPE_STRING,
+                default="2023"
+            )])
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 
 # 밸류에이션
@@ -73,26 +88,57 @@ class StockPricePagination(LimitOffsetPagination):
     default_limit = 300
     max_limit = 3000
 
+# class StockPriceList(generics.ListAPIView):
+#     using = 'lightsail_db'
+#     queryset = StockPrice.objects.using(using).all()
+#     serializer_class = StockPriceSerializer
+#     pagination_class = StockPricePagination
+#     filter_backends = [
+#         DjangoFilterBackend,
+#         filters.OrderingFilter,
+#     ]
+#     filterset_fields = {
+#         'date': ['contains'],
+#         'stcd': ['contains'],
+#     }
+#     ordering_fields = ['date']
+#     ordering = ['-date']
 
-class StockPriceList(generics.ListAPIView):
-    using = 'lightsail_db'
-    queryset = StockPrice.objects.using(using).all()
-    serializer_class = StockPriceSerializer
+
+class StockPriceList(APIView, PaginationHandlerMixin):
     pagination_class = StockPricePagination
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = {
-        'date': ['contains'],
-        'stcd': ['contains'],
-    }
-    ordering_fields = ['date']
-    ordering = ['-date']
+    serializer_class = StockPriceSerializer
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "stcd",
+                openapi.IN_QUERY,
+                description="종목코드",
+                type=openapi.TYPE_STRING,
+                default="005930"
+            )])
+    def get(self, request):
+        using = "lightsail_db"
+        stcd = request.GET.get("stcd")
+        query = StockPrice.objects.using(
+            using).filter(stcd=stcd).order_by('-date')
+        page = self.paginate_queryset(query)
+        if page is not None:
+            serializers = self.get_paginated_response(
+                self.serializer_class(page, many=True).data)
+        else:
+            serializers = self.get_paginated_response(query, many=True)
+        return Response(serializers.data)
 
 
 # 종목 검색
 class SearchStockList(generics.ListAPIView):
+    """
+    ~~검색창에서 검색을 위한 API~~
+    ---
+    종목코드 또는 종목명에 해당하는 값을 반환한다.
+    """
     using = 'lightsail_db'
     queryset = Stocks.objects.using(using).all()
     serializer_class = SearchStockSerializer
@@ -102,9 +148,21 @@ class SearchStockList(generics.ListAPIView):
 
 class CategoryKeywordsList(APIView):
     """
-    워드 클라우드
+    워드 클라우드 데이터
+    ---
+    워드 클라우드에 사용할 데이터 조회
+    호출 시 가장 최근의 데이터를 조회
     """
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "code",
+                openapi.IN_QUERY,
+                description="분류코드",
+                type=openapi.TYPE_STRING,
+                default="002000000"
+            )])
     def get(self, request):
         using = 'lightsail_db'
         code = request.GET.get('code')
@@ -112,7 +170,7 @@ class CategoryKeywordsList(APIView):
             select max(date) as date from category_keywords
         ''')[0].date
         query = CategoryKeywords.objects.using(
-            using).all().filter(date=cur_date, category_code=code).order_by('-date')
+            using).filter(date=cur_date, category_code=code)
         serializers = CategoryKeywordsSerializer(query, many=True)
         return Response(serializers.data)
 

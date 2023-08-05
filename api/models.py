@@ -62,7 +62,7 @@ class Stocks(models.Model):
         db_table = 'stocks'
 
 
-# # 
+# #
 class CategoryKeywords(models.Model):
     date = models.CharField(max_length=12, primary_key=True)
     category_code = models.CharField(max_length=9)
