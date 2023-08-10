@@ -155,6 +155,11 @@ CRONJOBS = [
     ("0 16 * * 1-5", "schedule.scheduler.index.kosdaq",
      '>> ' + os.path.join(BASE_DIR, 'config/log/index.log' + ' 2>&1 ')),
 
+    # 종목 탐색
+    # 급등주 및 급락주
+    ("5 16 * * 1-5", "schedule.scheduler.gains_and_losers.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/gains_and_losers.log' + ' 2>&1 ')),
+
     ###
     # 16:00 이후 수행해야함
     # per 전략
