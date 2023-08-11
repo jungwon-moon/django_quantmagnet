@@ -95,3 +95,20 @@ class ValuationReturns(models.Model):
         managed = False
         db_table = 'valuation_returns'
         # unique_together = (('name', 'date'),)
+
+
+class GainsAndLosers(models.Model):
+    date = models.CharField(max_length=8, primary_key=True)
+    stcd = models.CharField(max_length=6)
+    stnm = models.TextField()
+    rate = models.FloatField()
+    open = models.FloatField()
+    high = models.FloatField()
+    low = models.FloatField()
+    close = models.FloatField()
+    volume = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'cache_gains_and_losers'
+        unique_together = (('date', 'stcd'))

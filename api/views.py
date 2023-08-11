@@ -38,6 +38,22 @@ class HolidayList(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class GainsAndlosersList(APIView):
+    """
+    급등주 및 급락주
+    ---
+    """
+    def get(self, request):
+        using = 'lightsail_db'
+        date = GainsAndLosers.objects.using(using).raw('''
+            select max(date) as date from cache_gains_and_losers
+        ''')[0].date
+        query = GainsAndLosers.objects.using(using).filter(
+            date=date).order_by('-rate')
+        serializers = GainsAndLosersSerializer(query, many=True)
+        return Response(serializers.data)
+
+
 # 밸류에이션
 class ValuationPagination(LimitOffsetPagination):
     default_limit = 3000

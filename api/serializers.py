@@ -2,7 +2,7 @@ from api.models import *
 from rest_framework import serializers
 
 
-# # STOCK
+# STOCK
 class HolidaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Holiday
@@ -11,6 +11,12 @@ class HolidaySerializer(serializers.ModelSerializer):
             'kr_dy_tp',
             'holdy_nm'
         ]
+
+
+class GainsAndLosersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GainsAndLosers
+        fields = '__all__'
 
 
 class StockPriceSerializer(serializers.ModelSerializer):
