@@ -105,6 +105,7 @@ class GainsAndLosers(models.Model):
     low = models.FloatField()
     close = models.FloatField()
     volume = models.FloatField()
+    value = models.FloatField()
 
     class Meta:
         managed = False

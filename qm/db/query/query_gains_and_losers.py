@@ -2,7 +2,7 @@ class Gains_and_losers:
 
     def __init__(self):
 
-        self.query = f" select p.date, p.stcd, s.stnm, p.rate, p.open, p.high, p.low, p.close, p.volume "
+        self.query = f" select p.date, p.stcd, s.stnm, p.rate, p.open, p.high, p.low, p.close, p.volume, p.value "
         self.query += f"from stock_price as p "
         self.query += f"inner join stocks as s "
         self.query += f"on p.stcd = s.stcd "
