@@ -12,6 +12,11 @@ from drf_yasg.utils import swagger_auto_schema
 
 # # STOCK
 # 휴장일
+class HolidayPagination(LimitOffsetPagination):
+    default_limit = 30
+    max_limit = 100
+
+
 class HolidayList(generics.ListAPIView):
     """
     휴장일 데이터
@@ -20,9 +25,10 @@ class HolidayList(generics.ListAPIView):
     """
 
     using = 'lightsail_db'
-    queryset = Holiday.objects.using(using).all()
+    queryset = Holiday.objects.using(using).all().order_by("-calnd_dd")
     serializer_class = HolidaySerializer
     filter_backends = [filters.SearchFilter]
+    pagination_class = HolidayPagination
     search_fields = ['^calnd_dd']
 
     @swagger_auto_schema(
@@ -43,6 +49,7 @@ class GainsAndlosersList(APIView):
     급등주 및 급락주
     ---
     """
+
     def get(self, request):
         using = 'lightsail_db'
         date = GainsAndLosers.objects.using(using).raw('''
@@ -61,6 +68,9 @@ class ValuationPagination(LimitOffsetPagination):
 
 
 class ValuationList(generics.ListAPIView):
+    """
+    스크리너에서 사용
+    """
     using = "lightsail_db"
     cur_date = Valuation.objects.using(using).raw('''
         select max(date) as date from valuation
@@ -83,6 +93,10 @@ class ValuationList(generics.ListAPIView):
 
 
 class ValuationDetail(APIView):
+    """
+    stockDetail에 사용
+    특정 종목의 상세 정보
+    """
     def get(self, request):
         using = 'lightsail_db'
         stcd__contains = request.GET.get('stcd__contains')
