@@ -2,7 +2,7 @@ from api.models import *
 from rest_framework import serializers
 
 
-# STOCK
+# # STOCK
 class HolidaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Holiday
@@ -11,12 +11,6 @@ class HolidaySerializer(serializers.ModelSerializer):
             'kr_dy_tp',
             'holdy_nm'
         ]
-
-
-class GainsAndLosersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GainsAndLosers
-        fields = '__all__'
 
 
 class StockPriceSerializer(serializers.ModelSerializer):
@@ -37,6 +31,7 @@ class SearchStockSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# #
 class CategoryKeywordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CategoryKeywords
@@ -46,6 +41,18 @@ class CategoryKeywordsSerializer(serializers.ModelSerializer):
             'named_entity',
             'named_entity_count'
         ]
+
+
+class GainsAndLosersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GainsAndLosers
+        fields = '__all__'
+
+
+class SoaringValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SoaringValue
+        fields = '__all__'
 
 
 class ValuationReturnsSerializer(serializers.ModelSerializer):

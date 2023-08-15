@@ -106,7 +106,7 @@ strict-rfc3339==0.7
 style==1.1.6
 toml==0.10.2
 tomli==2.0.1
-tornado==6.3.2
+tornado==6.3.3
 tqdm==4.65.0
 traitlets==5.9.0
 trio==0.22.2
