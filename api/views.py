@@ -97,7 +97,6 @@ class ValuationDetail(APIView):
     stockDetail에 사용
     특정 종목의 상세 정보
     """
-
     def get(self, request):
         using = 'lightsail_db'
         stcd__contains = request.GET.get('stcd__contains')
