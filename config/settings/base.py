@@ -144,6 +144,7 @@ CRONJOBS = [
     # 밸류에이션
     ("0 16 * * 1-5", "schedule.scheduler.valuation.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/valuation.log' + ' 2>&1 ')),
+    # 수정주가 
     ("0 6 1,15 * *", "schedule.scheduler.adjusted_stock_price.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/adjusted_stock_price.log' + ' 2>&1 ')),
 
@@ -159,6 +160,8 @@ CRONJOBS = [
     # 급등주 및 급락주
     ("5 16 * * 1-5", "schedule.scheduler.gains_and_losers.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/gains_and_losers.log' + ' 2>&1 ')),
+    ("10 16 * * 1-5", "schedule.scheduler.soaring_value.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/soaring_value.log' + ' 2>&1 ')),
 
     ###
     # 16:00 이후 수행해야함

@@ -1,6 +1,6 @@
 import requests
 import datetime
-
+from dateutil.relativedelta import relativedelta
 
 def dt2str(td: datetime.datetime, Type: str = "day") -> str:
     r"""
@@ -67,3 +67,19 @@ def check_trading_day(td: str, db=None) -> bool:
             return False
 
     return True
+
+
+def change_date(dt, type, num):
+    """
+    type: "days", "weeks", "months"
+    return yyyymmdd
+    """
+    if type == "days":
+        date = dt2str(str2dt(dt) + relativedelta(days=num))
+    elif type == "weeks":
+        date = dt2str(str2dt(dt) + relativedelta(weeks=num))
+    elif type == "months":
+        date = dt2str(str2dt(dt) + relativedelta(months=num))
+    while (not check_trading_day(date)):
+        date = dt2str(str2dt(date) + relativedelta(days=1))
+    return date
