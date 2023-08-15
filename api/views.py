@@ -38,67 +38,6 @@ class HolidayList(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class GainsAndlosersList(APIView):
-    """
-    급등주 및 급락주
-    ---
-    """
-    def get(self, request):
-        using = 'lightsail_db'
-        date = GainsAndLosers.objects.using(using).raw('''
-            select max(date) as date from cache_gains_and_losers
-        ''')[0].date
-        query = GainsAndLosers.objects.using(using).filter(
-            date=date).order_by('-rate')
-        serializers = GainsAndLosersSerializer(query, many=True)
-        return Response(serializers.data)
-
-
-# 밸류에이션
-class ValuationPagination(LimitOffsetPagination):
-    default_limit = 3000
-    max_limit = 5000
-
-
-class ValuationList(generics.ListAPIView):
-    using = "lightsail_db"
-    cur_date = Valuation.objects.using(using).raw('''
-        select max(date) as date from valuation
-    ''')[0].date
-    queryset = Valuation.objects.using(using).all().filter(
-        date=cur_date)
-    serializer_class = ValuationSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.OrderingFilter
-    ]
-    filterset_fields = {
-        "pbr": ["gte", "lte"],
-        "per": ["gte", "lte"],
-        "eps": ["gte", "lte"],
-        "bps": ["gte", "lte"],
-        "roe": ["gte", "lte"],
-    }
-    pagination_class = ValuationPagination
-
-
-class ValuationDetail(APIView):
-    def get(self, request):
-        using = 'lightsail_db'
-        stcd__contains = request.GET.get('stcd__contains')
-        cur_date = Valuation.objects.using(using).raw(f'''
-            select max(date) as date from valuation 
-            where stcd like '{stcd__contains}'
-        ''')[0].date
-        query = Valuation.objects.using(
-            using).all().filter(
-                date=cur_date,
-                stcd__contains=stcd__contains
-        )
-        serializers = ValuationSerializer(query, many=True)
-        return Response(serializers.data)
-
-
 # 주가 조회
 class StockPricePagination(LimitOffsetPagination):
     default_limit = 300
@@ -148,6 +87,51 @@ class StockPriceList(APIView, PaginationHandlerMixin):
         return Response(serializers.data)
 
 
+# 밸류에이션
+class ValuationPagination(LimitOffsetPagination):
+    default_limit = 3000
+    max_limit = 5000
+
+
+class ValuationList(generics.ListAPIView):
+    using = "lightsail_db"
+    cur_date = Valuation.objects.using(using).raw('''
+        select max(date) as date from valuation
+    ''')[0].date
+    queryset = Valuation.objects.using(using).all().filter(
+        date=cur_date)
+    serializer_class = ValuationSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter
+    ]
+    filterset_fields = {
+        "pbr": ["gte", "lte"],
+        "per": ["gte", "lte"],
+        "eps": ["gte", "lte"],
+        "bps": ["gte", "lte"],
+        "roe": ["gte", "lte"],
+    }
+    pagination_class = ValuationPagination
+
+
+class ValuationDetail(APIView):
+    def get(self, request):
+        using = 'lightsail_db'
+        stcd__contains = request.GET.get('stcd__contains')
+        cur_date = Valuation.objects.using(using).raw(f'''
+            select max(date) as date from valuation 
+            where stcd like '{stcd__contains}'
+        ''')[0].date
+        query = Valuation.objects.using(
+            using).all().filter(
+                date=cur_date,
+                stcd__contains=stcd__contains
+        )
+        serializers = ValuationSerializer(query, many=True)
+        return Response(serializers.data)
+
+
 # 종목 검색
 class SearchStockList(generics.ListAPIView):
     """
@@ -162,6 +146,7 @@ class SearchStockList(generics.ListAPIView):
     search_fields = ['^stcd', '^stnm']
 
 
+# #
 class CategoryKeywordsList(APIView):
     """
     워드 클라우드 데이터
@@ -188,6 +173,23 @@ class CategoryKeywordsList(APIView):
         query = CategoryKeywords.objects.using(
             using).filter(date=cur_date, category_code=code)
         serializers = CategoryKeywordsSerializer(query, many=True)
+        return Response(serializers.data)
+
+
+class GainsAndlosersList(APIView):
+    """
+    급등주 및 급락주
+    ---
+    """
+
+    def get(self, request):
+        using = 'lightsail_db'
+        date = GainsAndLosers.objects.using(using).raw('''
+            select max(date) as date from cache_gains_and_losers
+        ''')[0].date
+        query = GainsAndLosers.objects.using(using).filter(
+            date=date).order_by('-rate')
+        serializers = GainsAndLosersSerializer(query, many=True)
         return Response(serializers.data)
 
 
