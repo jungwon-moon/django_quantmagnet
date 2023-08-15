@@ -130,7 +130,7 @@ class SoaringValue(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'cache_gains_and_losers'
+        db_table = 'cache_soaring_value'
         unique_together = (('date', 'stcd'))
 
 

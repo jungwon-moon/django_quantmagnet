@@ -49,7 +49,7 @@ class GainsAndLosersSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SoaringValue(serializers.ModelSerializer):
+class SoaringValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = SoaringValue
         fields = '__all__'
