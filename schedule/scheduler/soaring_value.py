@@ -49,8 +49,11 @@ def run():
                 tmp_value = tmp_df["value"]
                 cond1 = tmp_value.max() == tmp_value.values[-1]
                 cond2 = tmp_value.values[-2] * 10 < tmp_value.values[-1]
+                cond3 = tmp_value.values[-1] >= 10000000000
 
-                if (cond1 is np.True_) and (cond2 is np.True_):
+                if ((cond1 is np.True_) and
+                    (cond2 is np.True_) and
+                    (cond3 is np.True_)):
                     search_stock_list.append(stcd)
             
 
