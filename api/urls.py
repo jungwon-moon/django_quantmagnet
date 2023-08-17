@@ -9,7 +9,7 @@ urlpatterns = [
     path("kr/valuation/", ValuationList.as_view(), name='valuation'),
     path("kr/val-det/", ValuationDetail.as_view(), name='val-det'),
     path("kr/stockprice/", StockPriceList.as_view(), name='stockprice'),
-    path("kr/gains-losers/", GainsAndlosersList.as_view(), name='gains-losers'),
+    path("kr/gainers-losers/", GainersAndlosersList.as_view(), name='gainers-losers'),
     path("kr/soaringvalue/", SoaringValueList.as_view(), name='soaringvalue'),
 
     ###  ###

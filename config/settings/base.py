@@ -158,8 +158,8 @@ CRONJOBS = [
 
     # 종목 탐색
     # 급등주 및 급락주
-    ("5 16 * * 1-5", "schedule.scheduler.gains_and_losers.run",
-     '>> ' + os.path.join(BASE_DIR, 'config/log/gains_and_losers.log' + ' 2>&1 ')),
+    ("5 16 * * 1-5", "schedule.scheduler.gainers_and_losers.run",
+     '>> ' + os.path.join(BASE_DIR, 'config/log/gainers_and_losers.log' + ' 2>&1 ')),
     ("10 16 * * 1-5", "schedule.scheduler.soaring_value.run",
      '>> ' + os.path.join(BASE_DIR, 'config/log/soaring_value.log' + ' 2>&1 ')),
 

@@ -43,9 +43,9 @@ class CategoryKeywordsSerializer(serializers.ModelSerializer):
         ]
 
 
-class GainsAndLosersSerializer(serializers.ModelSerializer):
+class GainersAndLosersSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GainsAndLosers
+        model = GainersAndLosers
         fields = '__all__'
 
 

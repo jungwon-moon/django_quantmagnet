@@ -1,4 +1,4 @@
-class Gains_and_losers:
+class Gainers_and_losers:
 
     def __init__(self):
 

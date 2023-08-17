@@ -190,7 +190,7 @@ class CategoryKeywordsList(APIView):
         return Response(serializers.data)
 
 
-class GainsAndlosersList(APIView):
+class GainersAndlosersList(APIView):
     """
     급등주 및 급락주
     ---
@@ -198,12 +198,12 @@ class GainsAndlosersList(APIView):
 
     def get(self, request):
         using = 'lightsail_db'
-        date = GainsAndLosers.objects.using(using).raw('''
-            select max(date) as date from cache_gains_and_losers
+        date = GainersAndLosers.objects.using(using).raw('''
+            select max(date) as date from cache_gainers_and_losers
         ''')[0].date
-        query = GainsAndLosers.objects.using(using).filter(
+        query = GainersAndLosers.objects.using(using).filter(
             date=date).order_by('-rate')
-        serializers = GainsAndLosersSerializer(query, many=True)
+        serializers = GainersAndLosersSerializer(query, many=True)
         return Response(serializers.data)
 
 
@@ -218,8 +218,8 @@ class SoaringValueList(APIView):
         date = request.GET.get('date')
         # 거래대금 급등주 조건을 만족하지 않는 조건이 있을 수 있음
         if date is None:
-            date = GainsAndLosers.objects.using(using).raw("""
-                select max(date) as date from cache_gains_and_losers
+            date = GainersAndLosers.objects.using(using).raw("""
+                select max(date) as date from cache_gainers_and_losers
             """)[0].date
         query = SoaringValue.objects.using(using).filter(
             date=date).order_by('-value')

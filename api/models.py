@@ -92,7 +92,7 @@ class CategoryKeywords(models.Model):
         # unique_together = (('date', 'stcd'),)
 
 
-class GainsAndLosers(models.Model):
+class GainersAndLosers(models.Model):
     """
     급등주 및 급락주
     """
@@ -109,7 +109,7 @@ class GainsAndLosers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'cache_gains_and_losers'
+        db_table = 'cache_gainers_and_losers'
         unique_together = (('date', 'stcd'))
 
 
