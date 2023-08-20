@@ -44,9 +44,10 @@ def run():
             search_stock_list = []
             for stcd in stcds:
                 tmp_df = df[df["stcd"]==stcd]
-                if len(tmp_df) <= 2:
-                    continue
                 tmp_value = tmp_df["value"]
+                if len(tmp_df) <= 2: continue
+                if tmp_df["date"].values[-1] != today: continue
+                
                 cond1 = tmp_value.max() == tmp_value.values[-1]
                 cond2 = tmp_value.values[-2] * 10 < tmp_value.values[-1]
                 cond3 = tmp_value.values[-1] >= 10000000000
@@ -55,7 +56,6 @@ def run():
                     (cond2 is np.True_) and
                     (cond3 is np.True_)):
                     search_stock_list.append(stcd)
-            
 
             ### Insert DB ###
             query = f"""
