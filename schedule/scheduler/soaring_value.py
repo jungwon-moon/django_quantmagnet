@@ -56,20 +56,27 @@ def run():
                     (cond2 is np.True_) and
                     (cond3 is np.True_)):
                     search_stock_list.append(stcd)
+            
+            # search_stock_list이 빈 리스트인지 확인
+            if search_stock_list:
+                if len(search_stock_list) == 1:
+                    search_stock_list = f"('{str(search_stock_list[0])}')"
+                else:
+                    search_stock_list = tuple(search_stock_list)
 
-            ### Insert DB ###
-            query = f"""
-                select p.date, p.stcd, s.stnm, p.rate, p.open, p.high, p.low, p.close, p.volume, p.value 
-                from stock_price as p 
-                inner join stocks as s 
-                on p.stcd = s.stcd 
-                where p.date = '{today}' 
-                    and p.stcd in {tuple(search_stock_list)}
-                order by p.value desc
-            """
-            db.cursor.execute(query)
-            data  = list(map(lambda x: tuple(x), db.cursor.fetchall()))
-            db.multiInsertDB("cache_soaring_value", data)
+                ### Insert DB ###
+                query = f"""
+                    select p.date, p.stcd, s.stnm, p.rate, p.open, p.high, p.low, p.close, p.volume, p.value 
+                    from stock_price as p 
+                    inner join stocks as s 
+                    on p.stcd = s.stcd 
+                    where p.date = '{today}' 
+                        and p.stcd in {search_stock_list}
+                    order by p.value desc
+                """
+                db.cursor.execute(query)
+                data  = list(map(lambda x: tuple(x), db.cursor.fetchall()))
+                db.multiInsertDB("cache_soaring_value", data)
 
             txt = f'[SUCC] soaring_value\n실행: SCHEDULER'
             txt = json.dumps({"text": txt})
@@ -81,3 +88,5 @@ def run():
             requests.post(slack_url, headers=headers, data=txt)
     else:
         return False
+
+run()
