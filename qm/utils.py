@@ -2,6 +2,7 @@ import requests
 import datetime
 from dateutil.relativedelta import relativedelta
 
+
 def dt2str(td: datetime.datetime, Type: str = "day") -> str:
     r"""
     datetime -> str.
@@ -83,3 +84,11 @@ def change_date(dt, type, num):
     while (not check_trading_day(date)):
         date = dt2str(str2dt(date) + relativedelta(days=1))
     return date
+
+
+def date_range(start, end):
+    start = datetime.datetime.strptime(start, "%Y%m%d")
+    end = datetime.datetime.strptime(end, "%Y%m%d")
+    dates = [(start + datetime.timedelta(days=i)).strftime("%Y%m%d")
+             for i in range((end-start).days+1)]
+    return dates
