@@ -11,7 +11,7 @@ def get_kr_base_rate():
     r"""
     한국은행 기준금리 추이
     """
-    url = f"https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643"
+    url = f"http://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643"
     r = requests.get(url, headers=headers)
     soup = bs(r.text, 'html.parser')
     data = soup.find('tbody').find_all('td')

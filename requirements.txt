@@ -19,6 +19,7 @@ colorama==0.4.6
 contourpy==1.1.0
 coreapi==2.3.3
 coreschema==0.0.4
+cryptography==41.0.4
 DateTime==5.2
 decorator==5.1.1
 defusedxml==0.7.1
