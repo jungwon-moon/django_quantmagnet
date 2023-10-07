@@ -1,9 +1,10 @@
 from api.models import *
 from api.serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters
+from rest_framework import generics, filters, exceptions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 from rest_framework.pagination import LimitOffsetPagination
 from .pagination import PaginationHandlerMixin
 from drf_yasg import openapi
@@ -19,7 +20,7 @@ class HolidayPagination(LimitOffsetPagination):
 
 class HolidayList(generics.ListAPIView):
     """
-    휴장일 데이터
+    휴장일 조회
     ---
     조회연도의 휴장일을 조회
     """
@@ -44,26 +45,56 @@ class HolidayList(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class TradingdayAPI(APIView):
+    """
+    거래일 조회
+    ---
+    조회하는 날짜가 거래일인지 확인
+    거래일일 경우 조회한 날을 반환
+    거래일이 아닐 경우 전/후 일을 반환
+    """
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "date",
+                openapi.IN_QUERY,
+                description="조회일",
+                type=openapi.TYPE_STRING,
+                default="20150105"
+            ),
+            openapi.Parameter(
+                "rel",
+                openapi.IN_QUERY,
+                description="relation: prev/next",
+                type=openapi.TYPE_STRING,
+                default="next"
+            )
+        ])
+    def get(self, request):
+        using = "lightsail_db"
+        input_date = request.GET.get("date")
+        relation = request.GET.get("rel")
+
+        if not (input_date and relation):
+            raise exceptions.ParseError("InputError")
+
+        if relation == "prev":
+            query = StockPrice.objects.using(using).filter(
+                date__lte=input_date).order_by('-date').first()
+        if relation == "next":
+            query = StockPrice.objects.using(using).filter(
+                date__gte=input_date).order_by('date').last()
+
+        try:
+            return Response(query.date)
+        except:
+            raise exceptions.ParseError("None")
+
+
 # 주가 조회
 class StockPricePagination(LimitOffsetPagination):
     default_limit = 300
     max_limit = 3000
-
-# class StockPriceList(generics.ListAPIView):
-#     using = 'lightsail_db'
-#     queryset = StockPrice.objects.using(using).all()
-#     serializer_class = StockPriceSerializer
-#     pagination_class = StockPricePagination
-#     filter_backends = [
-#         DjangoFilterBackend,
-#         filters.OrderingFilter,
-#     ]
-#     filterset_fields = {
-#         'date': ['contains'],
-#         'stcd': ['contains'],
-#     }
-#     ordering_fields = ['date']
-#     ordering = ['-date']
 
 
 class StockPriceList(APIView, PaginationHandlerMixin):
