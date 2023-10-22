@@ -82,7 +82,10 @@ def change_date(dt, type, num):
     elif type == "months":
         date = dt2str(str2dt(dt) + relativedelta(months=num))
     while (not check_trading_day(date)):
-        date = dt2str(str2dt(date) + relativedelta(days=1))
+        if type == "days" and num < 0:
+            date = dt2str(str2dt(date) - relativedelta(days=1))
+        else:
+            date = dt2str(str2dt(date) + relativedelta(days=1))
     return date
 
 
@@ -92,3 +95,19 @@ def date_range(start, end):
     dates = [(start + datetime.timedelta(days=i)).strftime("%Y%m%d")
              for i in range((end-start).days+1)]
     return dates
+
+
+def load_monthly_first():
+    ls = list()
+    file_name = "qm/txt/monthly_first1.txt"
+    with open(file_name, "r") as file:
+        [ls.append(k.strip()) for k in file]
+    return ls
+
+
+def load_monthly_last():
+    ls = list()
+    file_name = "qm/txt/monthly_last1.txt"
+    with open(file_name, "r") as file:
+        [ls.append(k.strip()) for k in file]
+    return ls
