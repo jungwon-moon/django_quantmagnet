@@ -74,16 +74,26 @@ class TradingdayAPI(APIView):
         using = "lightsail_db"
         input_date = request.GET.get("date")
         relation = request.GET.get("rel")
+        contain = request.GET.get("con")
 
         if not (input_date and relation):
             raise exceptions.ParseError("InputError")
 
         if relation == "prev":
-            query = StockPrice.objects.using(using).filter(
-                date__lte=input_date).order_by('-date').first()
+            if contain:
+                query = StockPrice.objects.using(using).filter(
+                    date__lte=input_date).order_by('-date').first()
+            else:
+                query = StockPrice.objects.using(using).filter(
+                    date__lt=input_date).order_by('-date').first()
+
         if relation == "next":
-            query = StockPrice.objects.using(using).filter(
-                date__gte=input_date).order_by('date').last()
+            if contain:
+                query = StockPrice.objects.using(using).filter(
+                    date__gte=input_date).order_by('date').first()
+            else:
+                query = StockPrice.objects.using(using).filter(
+                    date__gt=input_date).order_by('date').first()
 
         try:
             return Response(query.date)
